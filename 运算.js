@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.2-β
+    // V2.9.2-β.2
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -157,6 +157,8 @@
             "OPERATION.EXTERIOR_ANGLE": "外角",
             "OPERATION.CLOCKWISE": "顺时针",
             "OPERATION.COUNTER_CLOCKWISE": "逆时针",
+            "OPERATION.NEW_LINE": "↵（换行）",
+            "OPERATION.TAB": "→（制表符）",
             "OPERATION.ARG_APPLE": "苹果",
             "OPERATION.ARG_BANANA": "香蕉",
             "OPERATION.ARG_PEACH": "桃子",
@@ -293,6 +295,8 @@
             "OPERATION.EXTERIOR_ANGLE": "外角",
             "OPERATION.CLOCKWISE": "順時針",
             "OPERATION.COUNTER_CLOCKWISE": "逆時針",
+            "OPERATION.NEW_LINE": "↵（換行）",
+            "OPERATION.TAB": "→（製表符）",
             "OPERATION.ARG_APPLE": "apple",
             "OPERATION.ARG_BANANA": "banna",
             "OPERATION.ARG_PEACH": "peach",
@@ -4015,8 +4019,18 @@
                         value: '-Infinity'
                     },
                     {
-                        text: '↵',
+                        text: formatMessage({
+                            id: 'OPERATION.NEW_LINE',
+                            default: '↵ (new line)'
+                        }),
                         value: 'newLine'
+                    },
+                    {
+                        text: formatMessage({
+                            id: 'OPERATION.TAB',
+                            default: '→ (tab)'
+                        }),
+                        value: 'tab'
                     }
                 ]
             }
@@ -5171,6 +5185,7 @@
             if (OPTION === '-Infinity') return -Infinity;
             if (OPTION === 'NaN') return NaN;
             if (OPTION === 'newLine') return '\n';
+            if (OPTION === 'tab') return '\t';
             return OPTION;
         }
 
