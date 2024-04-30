@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.2-β.2
+    // V2.9.2
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -73,6 +73,7 @@
             "OPERATION.IS_TRUE": "[OPERAND] 成立？",
             "OPERATION.IS_FALSE": "[OPERAND] 不成立？",
             "OPERATION.CHECK_TYPE": "[INPUT] 是 [MODE] ？",
+            "OPERATION.START_END_WITH": "[STRING1] 以 [STRING2] [POSITION] ？",
             "OPERATION.IS_BETWEEN": "[NUM] 在 [START] 到 [END] 之间？",
             "OPERATION.CONTAINS": "[STRING1] 包含 [STRING2] ？",
             "OPERATION.ARG_APPLE_CONTAINS": "果",
@@ -91,6 +92,7 @@
             "OPERATION.SPLIT_REMOVE": "按 [SYMBOL] 分割 [STRING] 删除第 [NUM] 项",
             "OPERATION.SPLIT_INSERT": "按 [SYMBOL] 分割 [STRING] 在第 [INDEX] 项前插入 [INSERT_STR]",
             "OPERATION.SPLIT_REPLACE": "按 [SYMBOL] 分割 [STRING] 把第 [INDEX] 项替换为 [REPLACE_STR]",
+            "OPERATION.SPLIT_BY_COUNT": "按每 [COUNT] 个字符分割 [STRING] 获取第 [NUM] 项",
             "OPERATION.SPLIT_ANALYSIS": "按 [SYMBOL] 分割 [STRING] 获取 [MODE]",
             "OPERATION.SPLIT_SHUFFLE": "按 [SYMBOL] 分割 [STRING] 打乱所有项",
             "OPERATION.TOGGLE_CASE": "[STRING2] 在 [STRING1] 中 [MODE]",
@@ -143,8 +145,8 @@
             "OPERATION.LOWERCASE": "小写",
             "OPERATION.CAPITALIZE": "首字母大写",
             "OPERATION.REVERSE": "倒序",
-            "OPERATION.FRONT": "前面",
-            "OPERATION.BACK": "后面",
+            "OPERATION.FRONT": "开头",
+            "OPERATION.BACK": "结尾",
             "OPERATION.MAX": "最大值",
             "OPERATION.MIN": "最小值",
             "OPERATION.MEAN": "平均值",
@@ -211,6 +213,7 @@
             "OPERATION.IS_TRUE": "[OPERAND] 成立？",
             "OPERATION.IS_FALSE": "[OPERAND] 不成立？",
             "OPERATION.CHECK_TYPE": "[INPUT] 是 [MODE] ？",
+            "OPERATION.START_END_WITH": "[STRING1] 的 [POSITION] 是 [STRING2] ？",
             "OPERATION.IS_BETWEEN": "[NUM] 在 [START] 到 [END] 之間？",
             "OPERATION.CONTAINS": "字串 [STRING1] 包含 [STRING2] ？",
             "OPERATION.ARG_APPLE_CONTAINS": "a",
@@ -229,6 +232,7 @@
             "OPERATION.SPLIT_REMOVE": "按 [SYMBOL] 分割 [STRING] 刪除第 [NUM] 個元素",
             "OPERATION.SPLIT_INSERT": "按 [SYMBOL] 分割 [STRING] 在第 [INDEX] 個元素前插入 [INSERT_STR]",
             "OPERATION.SPLIT_REPLACE": "按 [SYMBOL] 分割 [STRING] 把第 [INDEX] 個元素替換為 [REPLACE_STR]",
+            "OPERATION.SPLIT_BY_COUNT": "按每 [COUNT] 個字元分割 [STRING] 獲取第 [NUM] 個元素",
             "OPERATION.SPLIT_ANALYSIS": "按 [SYMBOL] 分割 [STRING] 獲取 [MODE]",
             "OPERATION.SPLIT_SHUFFLE": "按 [SYMBOL] 分割 [STRING] 隨機排序所有元素",
             "OPERATION.TOGGLE_CASE": "[STRING2] 在 [STRING1] 中 [MODE]",
@@ -631,7 +635,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: booleanBlock + ' (10)',
+            text: booleanBlock + ' (11)',
             buttonText: HideBlockType.bool ? expand : collapse,
             icon: typeIcons.booleanIcon,
             runCode: (() => {
@@ -649,7 +653,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: splitBlock + ' (06)',
+            text: splitBlock + ' (07)',
             buttonText: HideBlockType.split ? expand : collapse,
             icon: typeIcons.splitIcon,
             runCode: (() => {
@@ -1689,7 +1693,36 @@
                 },
                 hideFromPalette: rareHideAndSow('bool')
             },
-            ...sep(HideBlockType.bool),
+            ...sep(rareHideAndSow('bool')),
+            {
+                opcode: 'startEndWith',
+                blockType: BlockType.BOOLEAN,
+                text: formatMessage({
+                    id: 'OPERATION.START_END_WITH',
+                    default: 'does [STRING1] [POSITION] with [STRING2] ?'
+                }),
+                arguments: {
+                    STRING1: {
+                        type: ArgumentType.STRING,
+                        defaultValue: formatMessage({
+                            id: 'OPERATION.ARG_APPLE',
+                            default: 'apple'
+                        })
+                    },
+                    STRING2: {
+                        type: ArgumentType.STRING,
+                        defaultValue: formatMessage({
+                            id: 'OPERATION.ARG_APPLE_CONTAINS',
+                            default: 'a'
+                        })
+                    },
+                    POSITION: {
+                        type: ArgumentType.STRING,
+                        menu: 'POSITION'
+                    }
+                },
+                hideFromPalette: rareHideAndSow('bool')
+            },
             {
                 opcode: 'isBetween',
                 blockType: BlockType.BOOLEAN,
@@ -1711,7 +1744,7 @@
                         defaultValue: '10'
                     }
                 },
-                hideFromPalette: HideBlockType.bool
+                hideFromPalette: rareHideAndSow('bool')
             },
             ...sep(HideBlockType.bool),
             {
@@ -2318,6 +2351,38 @@
                 hideFromPalette: true
             },
             {
+                opcode: 'splitByCount',
+                blockType: BlockType.REPORTER,
+                text: formatMessage({
+                    id: 'OPERATION.SPLIT_BY_COUNT',
+                    default: 'split [STRING] by every [COUNT] character, get # [NUM]'
+                }),
+                arguments: {
+                    STRING: {
+                        type: ArgumentType.STRING,
+                        defaultValue: formatMessage({
+                            id: 'OPERATION.ARG_APPLE',
+                            default: 'apple'
+                        }) + '/' + formatMessage({
+                            id: 'OPERATION.ARG_BANANA',
+                            default: 'banana'
+                        }) + '/' + formatMessage({
+                            id: 'OPERATION.ARG_PEACH',
+                            default: 'peach'
+                        })
+                    },
+                    COUNT: {
+                        type: ArgumentType.NUMBER,
+                        defaultValue: '3'
+                    },
+                    NUM: {
+                        type: ArgumentType.NUMBER,
+                        defaultValue: '2'
+                    }
+                },
+                hideFromPalette: true
+            },
+            {
                 opcode: 'toggleCase_ci',
                 blockType: BlockType.REPORTER,
                 text: formatMessage({
@@ -2630,6 +2695,24 @@
                                 </shadow>
                             </value>
                             <value name="INDEX">
+                                <shadow type="math_integer">
+                                    <field name="NUM">2</field>
+                                </shadow>
+                            </value>
+                        </block>
+
+                        <block type="${'OPERATION_' + 'splitByCount'}">
+                            <value name="STRING">
+                                <shadow type="text">
+                                    <field name="TEXT">${argStr}</field>
+                                </shadow>
+                            </value>
+                            <value name="COUNT">
+                                <shadow type="math_integer">
+                                    <field name="NUM">3</field>
+                                </shadow>
+                            </value>
+                            <value name="NUM">
                                 <shadow type="math_integer">
                                     <field name="NUM">2</field>
                                 </shadow>
@@ -3779,14 +3862,14 @@
                     {
                         text: formatMessage({
                             id: 'OPERATION.FRONT',
-                            default: 'front'
+                            default: 'start'
                         }),
                         value: 'front'
                     },
                     {
                         text: formatMessage({
                             id: 'OPERATION.BACK',
-                            default: 'back'
+                            default: 'end'
                         }),
                         value: 'back'
                     }
@@ -4432,6 +4515,18 @@
             return (start <= num) && (num <= end);
         }
 
+        startEndWith({ STRING1, STRING2, POSITION }) {
+            let str1 = String(STRING1);
+            let str2 = String(STRING2);
+            if (POSITION === 'front') {
+                return str1.startsWith(str2);
+            }
+            else if (POSITION === 'back') {
+                return str1.endsWith(str2);
+            }
+            return false;
+        }
+
         contains_cs(args) {
             const format = function (string) {
                 return Cast.toString(string);
@@ -4634,7 +4729,9 @@
             const regex = new RegExp(symbol, 'i');
             const splitted = str.split(regex);
             const num = this._negLoop(Cast.toNumber(NUM), splitted);
+
             if (!Number.isInteger(num)) return '';
+
             return (splitted[(num - 1)]) ?? '';
         }
 
@@ -4644,8 +4741,11 @@
             const regex = new RegExp(symbol, 'i');
             const splitted = str.split(regex);
             const num = this._negLoop(Cast.toNumber(NUM), splitted);
+
             if (num < 1 || !Number.isInteger(num)) return str;
+
             splitted.splice(num - 1, 1);
+
             return splitted.join(symbol);
         }
 
@@ -4656,9 +4756,11 @@
             const regex = new RegExp(symbol, 'i');
             let splitted = str.split(regex);
             const index = this._negLoop(Cast.toNumber(INDEX), splitted);
+
             if (index < 1 || index > splitted.length || !Number.isInteger(index)) {
                 return str;
             }
+
             splitted.splice(index - 1, 0, insStr);
             return splitted.join(symbol);
         }
@@ -4670,11 +4772,30 @@
             const regex = new RegExp(symbol, 'i');
             let splitted = str.split(regex);
             const index = this._negLoop(Cast.toNumber(INDEX), splitted);
+
             if (index < 1 || index > splitted.length || !Number.isInteger(index)) {
                 return str;
             }
+
             splitted[index - 1] = repStr;
             return splitted.join(symbol);
+        }
+
+        splitByCount({ STRING, COUNT, NUM }) {
+            const str = String(STRING);
+            const count = Cast.toNumber(COUNT);
+            const num = Cast.toNumber(NUM);
+
+            if (!Number.isInteger(num)) return '';
+            if (count < 1 || !Number.isInteger(count)) return '';
+            if (str.length < 1) return '';
+
+            const regex = new RegExp(`.{1,${count}}`, 'g');
+            const chunks = str.match(regex);
+
+            const index = num < 0 ? this._negLoop(num, chunks) : num;
+
+            return chunks[index - 1] ?? '';
         }
 
         splitAndShuffle({ STRING, SYMBOL }) {
@@ -4682,10 +4803,12 @@
             const symbol = String(SYMBOL);
             const regex = new RegExp(symbol, 'i');
             let splitted = str.split(regex);
+
             for (let i = splitted.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [splitted[i], splitted[j]] = [splitted[j], splitted[i]];
             }
+
             return splitted.join(symbol);
         }
 
@@ -4695,6 +4818,7 @@
             const regex = new RegExp(symbol, 'i');
             const splitted = str.split(regex);
             const numberArr = splitted.map(Cast.toNumber);
+
             switch (MODE) {
                 case 'max': return Math.max(...numberArr);
                 case 'min': return Math.min(...numberArr);
