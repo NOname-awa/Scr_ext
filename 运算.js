@@ -5314,13 +5314,17 @@
         }
 
         colorBlend({ COLOR1, COLOR2, RATIO }) {
-            let c1 = COLOR1;
-            let c2 = COLOR2;
+            let hexColorRegex = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/;
+            let c1 = String(COLOR1);
+            let c2 = String(COLOR2);
             let ratio = Math.max(
                 Math.min(
                     Cast.toNumber(RATIO) / 100, 1
                 ), 0
             );
+
+            if (!hexColorRegex.test(c1)) return '#000000';
+            if (!hexColorRegex.test(c2)) return '#000000';
 
             let r1 = parseInt(c1.substring(1, 3), 16);
             let g1 = parseInt(c1.substring(3, 5), 16);
