@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.1
+    // V2.9.2-β
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -1340,7 +1340,7 @@
                 blockType: BlockType.REPORTER,
                 text: formatMessage({
                     id: 'OPERATION.ATAN2',
-                    default: '𝒂𝒕𝒂𝒏𝟐 [NUM1] ÷ [NUM2]'
+                    default: 'atan2 x: [NUM2] y: [NUM1]'
                 }),
                 arguments: {
                     NUM1: {
