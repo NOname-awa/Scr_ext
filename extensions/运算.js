@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.2
+    // V2.9.3-β.1
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -99,6 +99,8 @@
             "OPERATION.CONVERT": "转换 [STRING] 为 [MODE]",
             "OPERATION.JOIN": "连接文字 [STRING]",
             "OPERATION.GET_JOIN": "连接的文本",
+            "OPERATION.INF_JOIN": "连接",
+            "OPERATION.INF_JOIN_SEPARATOR": "和",
             "OPERATION.GET_TO_UNICODE": "[STRING] 的 Unicode",
             "OPERATION.UNICODE_TO_STRING": "Unicode 为 [STRING] 的字符",
             "OPERATION.SHUFFLE": "打乱 [STRING]",
@@ -117,6 +119,7 @@
             "OPERATION.IS_ANGLE_IN_RANGE": "角 [ANGLE1] 在角 [ANGLE2] 到角 [ANGLE3] 的 [MODE] 之间？",
             "OPERATION.CALCULATE_ANGLE_DIFFERENCE": "角度 [ANGLE1] 到 [ANGLE2] 的 [MODE]",
             "OPERATION.FIND_PARTITION": "把 [RANGE_START] 到 [RANGE_END] 等分为 [NUM_PARTITIONS] 个部分并获取 [VALUE] 的分区",
+            "OPERATION.CONTAIN_OPTIONS": "[OPERAND] 在",
             "OPERATION.GET_CONSTANT": "常量 [OPTION]",
             "OPERATION.COLOR_BLEND": "混合 [COLOR1] 与 [COLOR2] 比例 [RATIO] %",
             "OPERATION.OR": "[OPERAND1] 或 [OPERAND2]",
@@ -239,6 +242,8 @@
             "OPERATION.CONVERT": "把 [STRING] [MODE]",
             "OPERATION.JOIN": "組合字串 [STRING]",
             "OPERATION.GET_JOIN": "組合的字串",
+            "OPERATION.INF_JOIN": "組合字串",
+            "OPERATION.INF_JOIN_SEPARATOR": "",
             "OPERATION.GET_TO_UNICODE": "獲取 [STRING] 的 Unicode 碼",
             "OPERATION.UNICODE_TO_STRING": "將 Unicode [STRING] 轉換為字符",
             "OPERATION.SHUFFLE": "隨機排序 [STRING]",
@@ -257,6 +262,7 @@
             "OPERATION.IS_ANGLE_IN_RANGE": "∠ [ANGLE1] 在 ∠ [ANGLE2] 和 ∠ [ANGLE3] 之間的 [MODE]？",
             "OPERATION.CALCULATE_ANGLE_DIFFERENCE": "從 ∠ [ANGLE1] 到 ∠ [ANGLE2] 的 [MODE]",
             "OPERATION.FIND_PARTITION": "將範圍從 [RANGE_START] 到 [RANGE_END] 分割成 [NUM_PARTITIONS] 份，獲取第 [VALUE] 所屬的部分",
+            "OPERATION.CONTAIN_OPTIONS": "[OPERAND] 在",
             "OPERATION.GET_CONSTANT": "常數 [OPTION]",
             "OPERATION.COLOR_BLEND": "用比例 [RATIO] % 混合 [COLOR1] 和 [COLOR2]",
             "OPERATION.OR": "[OPERAND1] 或 [OPERAND2]",
@@ -769,6 +775,281 @@
         letterCase: true, // 函数名末尾包含 “ci” 表示忽略大小写
         miscellaneous: true
     };
+
+    const setExpandableBlocks = (expandableBlocks, runtime) => {
+        // 在 Gandi 编辑器获取 scratchBlocks 与获取 VM 的方法来自 https://github.com/FurryR/lpp-scratch 的LPP扩展
+        const hijack = (fn) => {
+            const _orig = Function.prototype.apply
+            Function.prototype.apply = (thisArg) => thisArg
+            const result = fn()
+            Function.prototype.apply = _orig
+            return result
+        }
+        const getScratch = (runtime) => {
+            function getEvent(e) {
+                return e instanceof Array ? e[e.length - 1] : e
+            }
+            const vm = hijack(
+                getEvent(runtime._events['QUESTION'])
+            ).props.vm
+            return {
+                scratchBlocks: hijack(
+                    getEvent(vm._events['EXTENSION_ADDED'])
+                )?.ScratchBlocks,
+                vm
+            }
+        }
+        // 创建按钮
+        const createButtons = (Blockly) => {
+            // 按钮
+            class FieldButton extends Blockly.FieldImage {
+                constructor(src) {
+                    super(src, 28, 28, undefined, false)
+                    this.initialized = false
+                }
+                init() {
+                    super.init()
+                    if (!this.initialized) {
+                        // 第一次初始化
+                        Blockly.bindEventWithChecks_(
+                            this.getSvgRoot(), 'mousedown', this, (e) => {
+                                e.stopPropagation()
+                                // 阻止事件冒泡，要不然你点按钮就会执行积木（点击积木）
+                            });
+                        Blockly.bindEventWithChecks_(
+                            this.getSvgRoot(), 'mouseup', this, this.handleClick.bind(this));
+                        // 绑定上这个按钮点击事件
+                    }
+                    this.initialized = true
+                }
+                handleClick(e) {
+                    if (!this.sourceBlock_ || !this.sourceBlock_.workspace) {
+                        return false;
+                    }
+                    if (this.sourceBlock_.workspace.isDragging()) {
+                        return false;
+                    }
+                    if (this.sourceBlock_.isInFlyout) {
+                        return false;
+                    }
+                    this.onclick(e)
+                }
+                onclick(e) {
+                    // 子类实现
+                }
+            }
+            // + 按钮
+            class PlusButton extends FieldButton {
+                constructor() {
+                    super(plusImage)
+                }
+                onclick() {
+                    const block = this.sourceBlock_
+                    // 增加积木数量改变
+                    block.itemCount_ += 1
+                    block.updateShape() // 更新
+                }
+            }
+            // - 按钮
+            class MinusButton extends FieldButton {
+                constructor() {
+                    super(minusImage)
+                }
+                onclick() {
+                    // 获取这个 field 的积木
+                    const block = this.sourceBlock_
+                    // 增加积木数量改变
+                    block.itemCount_ -= 1
+                    if (block.itemCount_ < 0) {
+                        // 不能有 -1 个参数
+                        block.itemCount_ = 0
+                    }
+                    block.updateShape() // 更新
+                }
+            }
+            // 图片
+            const minusImage = 'data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMjAiCiAgIGhlaWdodD0iMTYiCiAgIHZpZXdCb3g9IjAgMCA1LjI5MTY2NjYgNC4yMzMzMzMyIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMSAoOTFiNjZiMDc4MywgMjAyMy0xMS0xNikiCiAgIHNvZGlwb2RpOmRvY25hbWU9IuWHjy5zdmciCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXcxIgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJweCIKICAgICBpbmtzY2FwZTp6b29tPSIyMi42Mjc0MTciCiAgICAgaW5rc2NhcGU6Y3g9IjYuNzYxNzA4NiIKICAgICBpbmtzY2FwZTpjeT0iOC4yODY0MDc2IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDAwIgogICAgIGlua3NjYXBlOndpbmRvdy14PSItMTEiCiAgICAgaW5rc2NhcGU6d2luZG93LXk9Ii0xMSIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9ImxheWVyMSIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzMSIgLz4KICA8ZwogICAgIGlua3NjYXBlOmxhYmVsPSLlm77lsYIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJvcGFjaXR5OjE7ZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDowLjY3NDkyNTtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjAuMjtwYWludC1vcmRlcjptYXJrZXJzIGZpbGwgc3Ryb2tlIgogICAgICAgaWQ9InJlY3QyIgogICAgICAgd2lkdGg9IjIuNjQ1ODMzMyIKICAgICAgIGhlaWdodD0iMC42NjE0NTgzMSIKICAgICAgIHg9IjEuMzIyOTE2NiIKICAgICAgIHk9IjEuNzg1OTM3NSIKICAgICAgIHJ5PSIwLjMzMDcyOTE2IiAvPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJvcGFjaXR5OjAuMjtmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjAuNDk5MzIyO3N0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDowLjI2NDU4MztzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjE7cGFpbnQtb3JkZXI6bWFya2VycyBmaWxsIHN0cm9rZSIKICAgICAgIGlkPSJyZWN0MSIKICAgICAgIHdpZHRoPSIzLjk2ODc1IgogICAgICAgaGVpZ2h0PSIzLjk2ODc1IgogICAgICAgeD0iMC42NjE0NTgxMyIKICAgICAgIHk9IjAuMTMyMjkxNSIKICAgICAgIHJ4PSIwLjc5Mzc0OTk5IgogICAgICAgcnk9IjAuNzkzNzQ5OTkiIC8+CiAgPC9nPgo8L3N2Zz4=';
+            const plusImage = 'data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMjAiCiAgIGhlaWdodD0iMTYiCiAgIHZpZXdCb3g9IjAgMCA1LjI5MTY2NjYgNC4yMzMzMzMyIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMSAoOTFiNjZiMDc4MywgMjAyMy0xMS0xNikiCiAgIHNvZGlwb2RpOmRvY25hbWU9IuWKoC5zdmciCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXcxIgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJweCIKICAgICBpbmtzY2FwZTp6b29tPSIyMi42Mjc0MTciCiAgICAgaW5rc2NhcGU6Y3g9IjYuNzYxNzA4NiIKICAgICBpbmtzY2FwZTpjeT0iOC4yODY0MDc2IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDAwIgogICAgIGlua3NjYXBlOndpbmRvdy14PSItMTEiCiAgICAgaW5rc2NhcGU6d2luZG93LXk9Ii0xMSIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9ImxheWVyMSIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzMSIgLz4KICA8ZwogICAgIGlua3NjYXBlOmxhYmVsPSLlm77lsYIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJvcGFjaXR5OjE7ZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDowLjY3NDkyNTtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjAuMjtwYWludC1vcmRlcjptYXJrZXJzIGZpbGwgc3Ryb2tlIgogICAgICAgaWQ9InJlY3QyIgogICAgICAgd2lkdGg9IjIuNjQ1ODMzMyIKICAgICAgIGhlaWdodD0iMC42NjE0NTgzMSIKICAgICAgIHg9IjEuMzIyOTE2NiIKICAgICAgIHk9IjEuNzg1OTM3NSIKICAgICAgIHJ5PSIwLjMzMDcyOTE2IiAvPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjAuNjc0OTI1O3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MC4yO3BhaW50LW9yZGVyOm1hcmtlcnMgZmlsbCBzdHJva2UiCiAgICAgICBpZD0icmVjdDItOSIKICAgICAgIHdpZHRoPSIyLjY0NTgzMzMiCiAgICAgICBoZWlnaHQ9IjAuNjYxNDU4MzEiCiAgICAgICB4PSItMy40Mzk1ODMzIgogICAgICAgeT0iMi4zMTUxMDQiCiAgICAgICByeT0iMC4zMzA3MjkxNiIKICAgICAgIHRyYW5zZm9ybT0icm90YXRlKC05MCkiIC8+CiAgICA8cmVjdAogICAgICAgc3R5bGU9Im9wYWNpdHk6MC4yO2ZpbGw6I2ZmZmZmZjtmaWxsLW9wYWNpdHk6MC40OTkzMjI7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzO3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtwYWludC1vcmRlcjptYXJrZXJzIGZpbGwgc3Ryb2tlIgogICAgICAgaWQ9InJlY3QxIgogICAgICAgd2lkdGg9IjMuOTY4NzUiCiAgICAgICBoZWlnaHQ9IjMuOTY4NzUiCiAgICAgICB4PSIwLjY2MTQ1ODEzIgogICAgICAgeT0iMC4xMzIyOTE1IgogICAgICAgcng9IjAuNzkzNzQ5OTkiCiAgICAgICByeT0iMC43OTM3NDk5OSIgLz4KICA8L2c+Cjwvc3ZnPg==';
+
+            return {
+                PlusButton, MinusButton
+            }
+        }
+        const createExpandableBlock = (runtime, Blockly) => {
+
+            const { PlusButton, MinusButton } = createButtons(Blockly)
+            // 这个是 scratch 函数的 utils
+            const ProcedureUtils = Blockly.ScratchBlocks.ProcedureUtils
+
+            return {
+                attachShadow_: function (input,
+                    argumentType) {
+                    if (argumentType == 'n' || argumentType == 's') {
+                        var blockType = argumentType == 'n' ? 'math_number' : 'text';
+                        Blockly.Events.disable();
+                        try {
+                            var newBlock = this.workspace.newBlock(blockType);
+                            if (argumentType == 'n') {
+                                newBlock.setFieldValue('', 'NUM');
+                            } else {
+                                newBlock.setFieldValue('', 'TEXT');
+                            }
+                            newBlock.setShadow(true);
+                            if (!this.isInsertionMarker()) {
+                                newBlock.initSvg();
+                                newBlock.render(false);
+                            }
+                        } finally {
+                            Blockly.Events.enable();
+                        }
+                        if (Blockly.Events.isEnabled()) {
+                            Blockly.Events.fire(new Blockly.Events.BlockCreate(newBlock));
+                        }
+                        newBlock.outputConnection.connect(input.connection);
+                    }
+                },
+
+                updateShape: function () {
+                    var wasRendered = this.rendered;
+                    this.rendered = false;
+
+                    // 更新参数
+                    Blockly.Events.setGroup(true);
+                    // 先记录现在的 mutation
+                    var oldExtraState = Blockly.Xml.domToText(this.mutationToDom(this));
+                    // 创建新的积木
+                    for (var i = 0; i < this.itemCount_; i++) {
+                        if (!this.getInput('ADD' + i)) {
+                            const input = this.appendValueInput('ADD' + i);
+                            if (this.argType == INPUT_TYPES.BOOLEAN) {
+                                input.setCheck('Boolean');
+                            } else {
+                                this.attachShadow_(input, this.argType);
+                            }
+                            if (i > 0 && this.separatorText) {
+                                input.insertFieldAt(0, this.separatorText, null); // 插入分隔符文本
+                            }
+                        }
+                    }
+
+                    // 将 + - 按钮移动到最右边
+                    this.moveInputBefore('PLUSMINUS', null)
+                    if (runtime._editingTarget) {
+                        // 移除 input 并记录
+                        const blocks = runtime._editingTarget.blocks
+                        const targetBlock = blocks.getBlock(this.id)
+                        const toDel = []
+                        while (this.getInput('ADD' + i)) {
+                            const input = targetBlock.inputs['ADD' + i]
+                            if (input) {
+                                if (input.block !== null) {
+                                    const blockInInput = blocks.getBlock(input.block)
+                                    blockInInput.topLevel = true
+                                    blockInInput.parent = null
+                                    blocks.moveBlock({
+                                        id: blockInInput.id,
+                                        oldParent: this.id,
+                                        oldInput: 'ADD' + i,
+                                        newParent: undefined,
+                                        newInput: undefined,
+                                        //newCoordinate: e.newCoordinate
+                                    });
+                                }
+                                if (input.shadow !== null && input.shadow == input.block) {
+                                    blocks.deleteBlock(input.shadow)
+                                }
+                            }
+                            toDel.push('ADD' + i)
+                            //delete targetBlock.inputs['ADD' + i]
+                            this.removeInput('ADD' + i);
+                            i++;
+                        }
+                        setTimeout(() => {
+                            toDel.forEach((i) => {
+                                delete targetBlock.inputs[i]
+                            })
+                        }, 0);
+                    }
+
+                    // 更新 oldItemCount，oldItemCount 用于生成 domMutation 的
+                    this.oldItemCount = this.itemCount_
+                    // 新的 mutation
+                    const newExtraState = Blockly.Xml.domToText(this.mutationToDom(this));
+                    if (oldExtraState != newExtraState) {
+                        // 判断是否一样，不一样就 fire 一个 mutation 更新事件
+                        Blockly.Events.fire(
+                            new Blockly.Events.BlockChange(
+                                this, 'mutation', null,
+                                oldExtraState, newExtraState, // 状态
+                            ),
+                        );
+                    }
+                    Blockly.Events.setGroup(false);
+
+                    this.rendered = wasRendered;
+                    if (wasRendered && !this.isInsertionMarker()) {
+                        this.initSvg();
+                        this.render();
+                    }
+                },
+                mutationToDom: function () {
+                    // 可以保存别的数据，会保存到 sb3 中，oldItemCount 就是有多少个参数
+                    const container = document.createElement('mutation');
+                    container.setAttribute('items', `${this.oldItemCount}`);
+                    return container;
+                },
+                domToMutation: function (xmlElement) {
+                    // 读取 mutationToDom 保存的数据
+                    this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 0);
+                    this.updateShape() // 读了之后更新
+                },
+                init: function (attributes) {
+                    // 积木初始化
+                    this.itemCount_ = attributes.defaultItemCount || 0;
+                    this.oldItemCount = this.itemCount_;
+
+                    this.plusButton = new PlusButton();
+                    this.minusButton = new MinusButton();
+
+                    this.appendDummyInput("PLUSMINUS")
+                        .appendField(this.plusButton)
+                        .appendField(this.minusButton);
+
+                    this.argType = attributes.type;
+                    this.separatorText = attributes.separatorText;
+                },
+            }
+        }
+        const { scratchBlocks } = getScratch(runtime)
+        if (!scratchBlocks) return
+        const expandableAttr = createExpandableBlock(runtime, scratchBlocks)
+        scratchBlocks.Blocks = new Proxy(scratchBlocks.Blocks, {
+            set(target, property, value) {
+                // 设置
+                if (expandableBlocks[property]) {
+                    Object.keys(expandableAttr).forEach(key => {
+                        if (key != 'init') {
+                            // 设置，除了 init，后面设置
+                            value[key] = expandableAttr[key];
+                        }
+                    });
+                    const orgInit = value.init
+                    value.init = function () {
+                        // 先用原本的 init
+                        orgInit.call(this);
+                        // 然后再 init expandable 的
+                        expandableAttr.init.call(this, expandableBlocks[property]);
+                    }
+                }
+                return Reflect.set(target, property, value);
+            },
+        })
+    }
+    const INPUT_TYPES = {
+        STRING: 's',
+        NUMBER: 'n',
+        BOOLEAN: 'b'
+    }
 
     const sep = (hide) => [
         {
@@ -1598,6 +1879,21 @@
                         type: ArgumentType.STRING,
                         menu: 'CHECK_TYPE',
                         defaultValue: 'number'
+                    }
+                },
+                hideFromPalette: HideBlockType.bool
+            },
+            {
+                opcode: 'containOptions_ci',
+                blockType: BlockType.BOOLEAN,
+                text: formatMessage({
+                    id: 'OPERATION.CONTAIN_OPTIONS',
+                    default: 'is [OPERAND] in'
+                }),
+                arguments: {
+                    OPERAND: {
+                        type: ArgumentType.STRING,
+                        defalutValue: ''
                     }
                 },
                 hideFromPalette: HideBlockType.bool
@@ -2441,7 +2737,7 @@
                         }) + ' '
                     }
                 },
-                hideFromPalette: HideBlockType.string
+                hideFromPalette: rareHideAndSow('string')
             },
             {
                 opcode: 'getJoin',
@@ -2450,6 +2746,16 @@
                 text: formatMessage({
                     id: 'OPERATION.GET_JOIN',
                     default: 'join value'
+                }),
+                hideFromPalette: rareHideAndSow('string')
+            },
+            {
+                opcode: 'infJoin',
+                disableMonitor: true,
+                blockType: Scratch.BlockType.REPORTER,
+                text: formatMessage({
+                    id: 'OPERATION.INF_JOIN',
+                    default: 'join'
                 }),
                 hideFromPalette: HideBlockType.string
             },
@@ -3577,6 +3883,25 @@
                 hideFromPalette: HideBlockType.bool || HideBlockType.letterCase || HideBlockType.miscellaneous
             },
             {
+                opcode: 'containOptions_cs',
+                blockType: BlockType.BOOLEAN,
+                text: '[ICON]' + formatMessage({
+                    id: 'OPERATION.CONTAIN_OPTIONS',
+                    default: 'is [OPERAND] in'
+                }),
+                arguments: {
+                    ICON: {
+                        type: ArgumentType.IMAGE,
+                        dataURI: AaIcon
+                    },
+                    OPERAND: {
+                        type: ArgumentType.STRING,
+                        defalutValue: ''
+                    }
+                },
+                hideFromPalette: HideBlockType.bool || HideBlockType.letterCase || HideBlockType.miscellaneous
+            },
+            {
                 opcode: 'replace',
                 blockType: BlockType.REPORTER,
                 text: '[ICON]' + formatMessage({
@@ -4125,6 +4450,35 @@
             return getInfo();
         }
 
+        constructor(runtime) {
+            this.runtime = runtime ?? Scratch?.vm?.runtime
+
+            if (!this.runtime) {
+                return
+            }
+
+            setExpandableBlocks({
+                'OPERATION_infJoin': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: formatMessage({
+                        id: 'OPERATION.INF_JOIN_SEPARATOR',
+                        default: ''
+                    }),
+                    defaultItemCount: 2
+                },
+                'OPERATION_containOptions_ci': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: ',',
+                    defaultItemCount: 1
+                },
+                'OPERATION_containOptions_cs': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: ',',
+                    defaultItemCount: 1
+                }
+            }, this.runtime)
+        }
+
         openSettingWindow() {
             showWindow();
         }
@@ -4472,6 +4826,21 @@
             }
         }
 
+        containOptions_ci(args) {
+            let options = [];
+            let operand = String(args.OPERAND).toLowerCase();
+            for (let key in args) {
+                if (key !== 'OPERAND') {
+                    if (args.hasOwnProperty(key)) {
+                        options.push(
+                            String(args[key]).toLowerCase()
+                        );
+                    }
+                }
+            }
+            return options.includes(operand);
+        }
+
         _compare(arg1, arg2, symbol) {
             if (symbol === 'equal') return Cast.compare(arg1, arg2) === 0;
             if (symbol === 'strictlyEqual') return String(arg1) === String(arg2);
@@ -4532,6 +4901,21 @@
                 return Cast.toString(string);
             };
             return format(args.STRING1).includes(format(args.STRING2));
+        }
+
+        containOptions_cs(args) {
+            let options = [];
+            let operand = String(args.OPERAND);
+            for (let key in args) {
+                if (key !== 'OPERAND') {
+                    if (args.hasOwnProperty(key)) {
+                        options.push(
+                            String(args[key])
+                        );
+                    }
+                }
+            }
+            return options.includes(operand);
         }
 
         trueBlock = () => true;
@@ -4856,6 +5240,16 @@
                 return thread.joinValue.value ?? '';
             }
             return '';
+        }
+
+        infJoin(args) {
+            let r = '';
+            for (let key in args) {
+                if (args.hasOwnProperty(key)) {
+                    r += String(args[key]);
+                }
+            }
+            return r;
         }
 
         getUnicode({ STRING }) {
@@ -5366,7 +5760,6 @@
         }
 
         equalOptions({ OPERAND1, OPERAND2 }, util) {
-            console.log(util);
             const operand1 = String(OPERAND1).toLowerCase();
             const operand2 = String(OPERAND2).toLowerCase();
             const { thread } = util;
