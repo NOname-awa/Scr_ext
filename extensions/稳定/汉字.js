@@ -1,5 +1,7 @@
 (function (Scratch) {
 	'use strict';
+	
+	// V0.0.2
 
 	Scratch.translate.setup({
 		"zh": {

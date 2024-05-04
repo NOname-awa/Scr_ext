@@ -1,5 +1,7 @@
 ((Scratch) => {
     'use strict';
+    
+    // V0.1.1
 
     const { Cast, ArgumentType, BlockType, TargetType } = Scratch;
 
