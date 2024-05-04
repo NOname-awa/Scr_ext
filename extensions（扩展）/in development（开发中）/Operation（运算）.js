@@ -790,9 +790,9 @@
             color3: '#00866e'
         },
         string: {
-            color1: '#ffb62e',
-            color2: '#e6a429',
-            color3: '#cc9225'
+            color1: '#e5b406',
+            color2: '#cea205',
+            color3: '#b79005'
         },
         split: {
             color1: '#ff932e',
@@ -811,8 +811,8 @@
         },
         rareBlock: {
             color1: '#6859ff',
-            color2: '#5E50E6',
-            color3: '#5347CC'
+            color2: '#5e50e6',
+            color3: '#5347cc'
         }
     };
 
@@ -1477,8 +1477,8 @@
 
     const getInfo = () => ({
         color1: '#6859ff',
-        color2: '#5E50E6',
-        color3: '#5347CC',
+        color2: '#5e50e6',
+        color3: '#5347cc',
         menuIconURI: blockPaletteIcons ? typeIcons.operatorsIcon[getBlockColor()] : undefined,
         id: 'OPERATION',
         name: formatMessage({
