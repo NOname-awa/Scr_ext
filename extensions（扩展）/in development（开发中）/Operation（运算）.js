@@ -785,9 +785,9 @@
             color3: '#5d9a47'
         },
         bool: {
-            color1: '#53b4c1',
-            color2: '#4ba2ae',
-            color3: '#42909a'
+            color1: '#00a889',
+            color2: '#00977b',
+            color3: '#00866e'
         },
         string: {
             color1: '#ffb62e',
@@ -800,9 +800,9 @@
             color3: '#cc7625'
         },
         graph: {
-            color1: "#ff976c",
-            color2: "#cc7956",
-            color3: "#e58861"
+            color1: '#ff976c',
+            color2: '#e68861',
+            color3: '#cc7956'
         },
         base: {
             color1: '#d65cbc',
@@ -891,7 +891,7 @@
                 onclick() {
                     const block = this.sourceBlock_
                     // 增加积木数量改变
-                    block.itemCount_ += 1
+                    block.itemCount_ += block.paramStep;
                     block.updateShape() // 更新
                 }
             }
@@ -904,7 +904,7 @@
                     // 获取这个 field 的积木
                     const block = this.sourceBlock_
                     // 增加积木数量改变
-                    block.itemCount_ -= 1
+                    block.itemCount_ -= block.paramStep;
                     if (block.itemCount_ < 0) {
                         // 不能有 -1 个参数
                         block.itemCount_ = 0
@@ -1052,6 +1052,7 @@
                     // 积木初始化
                     this.itemCount_ = attributes.defaultItemCount || 0;
                     this.oldItemCount = this.itemCount_;
+                    this.paramStep = attributes.paramStep || 1;
 
                     this.plusButton = new PlusButton();
                     this.minusButton = new MinusButton();
