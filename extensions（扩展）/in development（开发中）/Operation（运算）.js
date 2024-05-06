@@ -564,7 +564,7 @@
         g = ('0' + (g || 0).toString(16)).slice(-2);
         b = ('0' + (b || 0).toString(16)).slice(-2);
         return '#' + r + g + b;
-    }
+    };
 
     const newOption = ({ text, buttonText, runCode, icon, type }) => {
         let typeColor = blockColor[type];
@@ -868,49 +868,51 @@
     const setExpandableBlocks = (expandableBlocks, runtime) => {
         // 在 Gandi 编辑器获取 scratchBlocks 与获取 VM 的方法来自 https://github.com/FurryR/lpp-scratch 的LPP扩展
         const hijack = (fn) => {
-            const _orig = Function.prototype.apply
-            Function.prototype.apply = (thisArg) => thisArg
-            const result = fn()
-            Function.prototype.apply = _orig
-            return result
-        }
+            const _orig = Function.prototype.apply;
+            Function.prototype.apply = (thisArg) => thisArg;
+            const result = fn();
+            Function.prototype.apply = _orig;
+            return result;
+        };
         const getScratch = (runtime) => {
             function getEvent(e) {
-                return e instanceof Array ? e[e.length - 1] : e
+                return e instanceof Array ? e[e.length - 1] : e;
             }
             const vm = hijack(
                 getEvent(runtime._events['QUESTION'])
-            ).props.vm
+            ).props.vm;
             return {
                 scratchBlocks: hijack(
                     getEvent(vm._events['EXTENSION_ADDED'])
                 )?.ScratchBlocks,
                 vm
-            }
+            };
         }
+
         // 创建按钮
         const createButtons = (Blockly) => {
             // 按钮
             class FieldButton extends Blockly.FieldImage {
                 constructor(src) {
-                    super(src, 28, 28, undefined, false)
-                    this.initialized = false
+                    super(src, 28, 28, undefined, false);
+                    this.initialized = false;
                 }
                 init() {
-                    super.init()
+                    super.init();
                     if (!this.initialized) {
                         // 第一次初始化
                         Blockly.bindEventWithChecks_(
                             this.getSvgRoot(), 'mousedown', this, (e) => {
-                                e.stopPropagation()
+                                e.stopPropagation();
                                 // 阻止事件冒泡，要不然你点按钮就会执行积木（点击积木）
                             });
                         Blockly.bindEventWithChecks_(
                             this.getSvgRoot(), 'mouseup', this, this.handleClick.bind(this));
                         // 绑定上这个按钮点击事件
                     }
-                    this.initialized = true
+                    this.initialized = true;
                 }
+
                 handleClick(e) {
                     if (!this.sourceBlock_ || !this.sourceBlock_.workspace) {
                         return false;
@@ -921,41 +923,47 @@
                     if (this.sourceBlock_.isInFlyout) {
                         return false;
                     }
-                    this.onclick(e)
+                    this.onclick(e);
                 }
+
                 onclick(e) {
                     // 子类实现
                 }
             }
+
             // + 按钮
             class PlusButton extends FieldButton {
                 constructor() {
-                    super(plusImage())
+                    super(plusImage());
                 }
+
                 onclick() {
                     const block = this.sourceBlock_
                     // 增加积木数量改变
                     block.itemCount_ += block.paramStep;
-                    block.updateShape() // 更新
+                    block.updateShape(); // 更新
                 }
             }
+
             // - 按钮
             class MinusButton extends FieldButton {
                 constructor() {
-                    super(minusImage())
+                    super(minusImage());
                 }
+
                 onclick() {
                     // 获取这个 field 的积木
-                    const block = this.sourceBlock_
+                    const block = this.sourceBlock_;
                     // 增加积木数量改变
                     block.itemCount_ -= block.paramStep;
                     if (block.itemCount_ < 0) {
                         // 不能有 -1 个参数
-                        block.itemCount_ = 0
+                        block.itemCount_ = 0;
                     }
-                    block.updateShape() // 更新
+                    block.updateShape(); // 更新
                 }
             }
+
             // 图片
             const minusImage = () => {
                 const head = 'data:image/svg+xml;base64,';
@@ -977,6 +985,7 @@
                 </svg>`;
                 return head + btoa(svg);
             }
+
             const plusImage = () => {
                 const head = 'data:image/svg+xml;base64,';
                 let color = () => {
@@ -1001,13 +1010,13 @@
 
             return {
                 PlusButton, MinusButton
-            }
+            };
         }
         const createExpandableBlock = (runtime, Blockly) => {
 
-            const { PlusButton, MinusButton } = createButtons(Blockly)
+            const { PlusButton, MinusButton } = createButtons(Blockly);
             // 这个是 scratch 函数的 utils
-            const ProcedureUtils = Blockly.ScratchBlocks.ProcedureUtils
+            const ProcedureUtils = Blockly.ScratchBlocks.ProcedureUtils;
 
             return {
                 attachShadow_: function (input,
@@ -1064,16 +1073,16 @@
                     this.moveInputBefore('PLUSMINUS', null)
                     if (runtime._editingTarget) {
                         // 移除 input 并记录
-                        const blocks = runtime._editingTarget.blocks
-                        const targetBlock = blocks.getBlock(this.id)
-                        const toDel = []
+                        const blocks = runtime._editingTarget.blocks;
+                        const targetBlock = blocks.getBlock(this.id);
+                        const toDel = [];
                         while (this.getInput('ADD' + i)) {
-                            const input = targetBlock.inputs['ADD' + i]
+                            const input = targetBlock.inputs['ADD' + i];
                             if (input) {
                                 if (input.block !== null) {
-                                    const blockInInput = blocks.getBlock(input.block)
-                                    blockInInput.topLevel = true
-                                    blockInInput.parent = null
+                                    const blockInInput = blocks.getBlock(input.block);
+                                    blockInInput.topLevel = true;
+                                    blockInInput.parent = null;
                                     blocks.moveBlock({
                                         id: blockInInput.id,
                                         oldParent: this.id,
@@ -1084,7 +1093,7 @@
                                     });
                                 }
                                 if (input.shadow !== null && input.shadow == input.block) {
-                                    blocks.deleteBlock(input.shadow)
+                                    blocks.deleteBlock(input.shadow);
                                 }
                             }
                             toDel.push('ADD' + i)
@@ -1094,13 +1103,13 @@
                         }
                         setTimeout(() => {
                             toDel.forEach((i) => {
-                                delete targetBlock.inputs[i]
+                                delete targetBlock.inputs[i];
                             })
                         }, 0);
                     }
 
                     // 更新 oldItemCount，oldItemCount 用于生成 domMutation 的
-                    this.oldItemCount = this.itemCount_
+                    this.oldItemCount = this.itemCount_;
                     // 新的 mutation
                     const newExtraState = Blockly.Xml.domToText(this.mutationToDom(this));
                     if (oldExtraState != newExtraState) {
@@ -1129,7 +1138,7 @@
                 domToMutation: function (xmlElement) {
                     // 读取 mutationToDom 保存的数据
                     this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 0);
-                    this.updateShape() // 读了之后更新
+                    this.updateShape(); // 读了之后更新
                 },
                 init: function (attributes) {
                     // 积木初始化
@@ -1149,9 +1158,9 @@
                 },
             }
         }
-        const { scratchBlocks } = getScratch(runtime)
-        if (!scratchBlocks) return
-        const expandableAttr = createExpandableBlock(runtime, scratchBlocks)
+        const { scratchBlocks } = getScratch(runtime);
+        if (!scratchBlocks) return;
+        const expandableAttr = createExpandableBlock(runtime, scratchBlocks);
         scratchBlocks.Blocks = new Proxy(scratchBlocks.Blocks, {
             set(target, property, value) {
                 // 设置
@@ -1162,7 +1171,7 @@
                             value[key] = expandableAttr[key];
                         }
                     });
-                    const orgInit = value.init
+                    const orgInit = value.init;
                     value.init = function () {
                         // 先用原本的 init
                         orgInit.call(this);
@@ -1178,7 +1187,7 @@
         STRING: 's',
         NUMBER: 'n',
         BOOLEAN: 'b'
-    }
+    };
 
     const sep = (hide) => [
         {
