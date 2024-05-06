@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.3-β.3
+    // V2.9.3-β.4
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -60,6 +60,7 @@
             "OPERATION.LOOP_NUMBER": "让 [NUM] 在 [START] 到 [END] 中循环",
             "OPERATION.ROUND": "四舍五入 [NUM1] 到小数点后 [NUM2] 位",
             "OPERATION.MAP_OFF": "映射 [NUM] 从 [START1] ~ [END1] 到 [START2] ~ [END2]",
+            "OPERATION.FIND": "寻找 [MODE]",
             "OPERATION.BASE": "把 [INTO1] 进制的 [NUM] 转换为 [INTO2] 进制",
             "OPERATION.TO_BIN": "[NUM]₁₀ → 二进制",
             "OPERATION.TO_DEC": "[NUM]₂ → 十进制",
@@ -204,6 +205,7 @@
             "OPERATION.LOOP_NUMBER": "讓 [NUM] 在範圍 [START] 到 [END] 內循環",
             "OPERATION.ROUND": "將 [NUM1] 四捨五入到 [NUM2] 小數位",
             "OPERATION.MAP_OFF": "映射 [NUM] 從 [START1]～[END1] 到 [START2]～[END2]",
+            "OPERATION.FIND": "尋找 [MODE]",
             "OPERATION.BASE": "將 [NUM] 從進制 [INTO1] 轉換為進制 [INTO2]",
             "OPERATION.TO_BIN": "[NUM]₁₀ → 二進位制",
             "OPERATION.TO_DEC": "[NUM]₂ → 十進位制",
@@ -1758,6 +1760,22 @@
                         END2: {
                             type: ArgumentType.NUMBER,
                             defaultValue: '1000'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.math
+                },
+                {
+                    opcode: 'find',
+                    disableMonitor: true,
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.FIND',
+                        default: 'find [MODE]'
+                    }),
+                    arguments: {
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'SPLIT_ANALYSIS_MODE'
                         }
                     },
                     hideFromPalette: HideBlockType.math
@@ -4640,6 +4658,11 @@
                         default: ' , '
                     }),
                     defaultItemCount: 1
+                },
+                'OPERATION_find': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: '',
+                    defaultItemCount: 2
                 }
             }, this.runtime)
         }
@@ -4692,6 +4715,22 @@
             START2 = Cast.toNumber(START2);
             END2 = Cast.toNumber(END2);
             return ((NUM - START1) / (END1 - START1)) * (END2 - START2) + START2;
+        }
+
+        find(args) {
+            const numberArr = Object.keys(args)
+                .filter(key => key.startsWith('ADD'))
+                .map(key => args[key]);
+
+            switch (args.MODE) {
+                case 'max': return Math.max(...numberArr);
+                case 'min': return Math.min(...numberArr);
+                case 'mean': {
+                    const sum = numberArr.reduce((acc, curr) => acc + Number(curr), 0);
+                    return sum / numberArr.length;
+                }
+                case 'sum': return numberArr.reduce((acc, curr) => acc + Number(curr), 0);
+            }
         }
 
         atan2Block({ NUM1, NUM2 }) {
