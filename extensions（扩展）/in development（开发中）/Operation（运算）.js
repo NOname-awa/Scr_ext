@@ -550,8 +550,31 @@
         }
     };
 
+    const blend = (c1, c2, ratio) => {
+        let r1 = parseInt(c1.substring(1, 3), 16);
+        let g1 = parseInt(c1.substring(3, 5), 16);
+        let b1 = parseInt(c1.substring(5, 7), 16);
+        let r2 = parseInt(c2.substring(1, 3), 16);
+        let g2 = parseInt(c2.substring(3, 5), 16);
+        let b2 = parseInt(c2.substring(5, 7), 16);
+        let r = Math.round(r1 * (1 - ratio) + r2 * ratio);
+        let g = Math.round(g1 * (1 - ratio) + g2 * ratio);
+        let b = Math.round(b1 * (1 - ratio) + b2 * ratio);
+        r = ('0' + (r || 0).toString(16)).slice(-2);
+        g = ('0' + (g || 0).toString(16)).slice(-2);
+        b = ('0' + (b || 0).toString(16)).slice(-2);
+        return '#' + r + g + b;
+    }
+
     const newOption = ({ text, buttonText, runCode, icon, type }) => {
         let typeColor = blockColor[type];
+        let color = () => {
+            switch (getBlockColor()) {
+                case 'dark': return [blend(typeColor?.color2, '#000000', 0.6), typeColor?.color2];
+                case 'highContrast': return [blend(typeColor?.color1, '#ffffff', 0.35), typeColor?.color2];
+                default: return [typeColor?.color1, typeColor?.color3];
+            }
+        }
 
         let optionDiv = document.createElement('div');
         optionDiv.style.display = 'flex';
@@ -566,7 +589,7 @@
             iconBorder.style.height = '20px';
             iconBorder.style.borderRadius = '10px';
             iconBorder.style.backgroundImage = `url(${blockColor.useTypeColor
-                ? (getEmptyIcon(typeColor?.color1, typeColor?.color3))
+                ? (getEmptyIcon(color()[0], color()[1]))
                 : (typeIcons.emptyIcon[getBlockColor()])})`;
 
             iconBorder.style.backgroundSize = 'cover';
@@ -907,7 +930,7 @@
             // + 按钮
             class PlusButton extends FieldButton {
                 constructor() {
-                    super(plusImage)
+                    super(plusImage())
                 }
                 onclick() {
                     const block = this.sourceBlock_
@@ -919,7 +942,7 @@
             // - 按钮
             class MinusButton extends FieldButton {
                 constructor() {
-                    super(minusImage)
+                    super(minusImage())
                 }
                 onclick() {
                     // 获取这个 field 的积木
@@ -934,8 +957,47 @@
                 }
             }
             // 图片
-            const minusImage = 'data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMjgiCiAgIGhlaWdodD0iMjgiCiAgIHZpZXdCb3g9IjAgMCA3LjQwODMzMzIgNy40MDgzMzMxIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMiAoMDkxZTIwZWYwZiwgMjAyMy0xMS0yNSkiCiAgIHNvZGlwb2RpOmRvY25hbWU9IuWHjy5zdmciCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXcxIgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJweCIKICAgICBpbmtzY2FwZTp6b29tPSIxNiIKICAgICBpbmtzY2FwZTpjeD0iOC4zMTI1IgogICAgIGlua3NjYXBlOmN5PSI5LjI4MTI1IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDExIgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0iZzEiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczEiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0i5Zu+5bGCIDEiCiAgICAgaW5rc2NhcGU6Z3JvdXBtb2RlPSJsYXllciIKICAgICBpZD0ibGF5ZXIxIj4KICAgIDxnCiAgICAgICBpZD0iZzEiCiAgICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjE2NDk4MTUxLDAuMDgyNjczNDYpIj4KICAgICAgPHJlY3QKICAgICAgICAgc3R5bGU9Im9wYWNpdHk6MTtmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjAuOTA1NTA1O3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MC4yO3BhaW50LW9yZGVyOm1hcmtlcnMgZmlsbCBzdHJva2UiCiAgICAgICAgIGlkPSJyZWN0MiIKICAgICAgICAgd2lkdGg9IjMuOTY4NzUiCiAgICAgICAgIGhlaWdodD0iMC43OTM3NDk5OSIKICAgICAgICAgeD0iMS41NTQ4MTAyIgogICAgICAgICB5PSIzLjIyNDYxODIiCiAgICAgICAgIHJ5PSIwLjM5Njg3NDk5IiAvPgogICAgPC9nPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJvcGFjaXR5OjAuMjtmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjA7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzMzM7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxO3BhaW50LW9yZGVyOm1hcmtlcnMgZmlsbCBzdHJva2UiCiAgICAgICBpZD0icmVjdDEiCiAgICAgICB3aWR0aD0iNi4zNDk5OTk5IgogICAgICAgaGVpZ2h0PSI2LjM0OTk5OTkiCiAgICAgICB4PSIwLjUyOTE2NjY0IgogICAgICAgeT0iMC41MjkxNjY2NCIKICAgICAgIHJ4PSIwLjk0MDc0MDciCiAgICAgICByeT0iMC45NDA3NDA3IiAvPgogIDwvZz4KPC9zdmc+Cg==';
-            const plusImage = 'data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMjgiCiAgIGhlaWdodD0iMjgiCiAgIHZpZXdCb3g9IjAgMCA3LjQwODMzMzIgNy40MDgzMzMxIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMiAoMDkxZTIwZWYwZiwgMjAyMy0xMS0yNSkiCiAgIHNvZGlwb2RpOmRvY25hbWU9IuWKoC5zdmciCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXcxIgogICAgIHBhZ2Vjb2xvcj0iIzUwNTA1MCIKICAgICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjNTA1MDUwIgogICAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJweCIKICAgICBpbmtzY2FwZTp6b29tPSIxNiIKICAgICBpbmtzY2FwZTpjeD0iOC4zMTI1IgogICAgIGlua3NjYXBlOmN5PSI5LjI4MTI1IgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDExIgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0iZzEiIC8+CiAgPGRlZnMKICAgICBpZD0iZGVmczEiIC8+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0i5Zu+5bGCIDEiCiAgICAgaW5rc2NhcGU6Z3JvdXBtb2RlPSJsYXllciIKICAgICBpZD0ibGF5ZXIxIj4KICAgIDxnCiAgICAgICBpZD0iZzEiCiAgICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjE2NDk4MTUxLDAuMDgyNjczNDYpIj4KICAgICAgPHJlY3QKICAgICAgICAgc3R5bGU9Im9wYWNpdHk6MTtmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjAuOTA1NTA1O3N0cm9rZS1saW5lam9pbjpyb3VuZDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MC4yO3BhaW50LW9yZGVyOm1hcmtlcnMgZmlsbCBzdHJva2UiCiAgICAgICAgIGlkPSJyZWN0MiIKICAgICAgICAgd2lkdGg9IjMuOTY4NzUiCiAgICAgICAgIGhlaWdodD0iMC43OTM3NDk5OSIKICAgICAgICAgeD0iMS41NTQ4MTAyIgogICAgICAgICB5PSIzLjIyNDYxODIiCiAgICAgICAgIHJ5PSIwLjM5Njg3NDk5IiAvPgogICAgICA8cmVjdAogICAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTpub25lO3N0cm9rZS13aWR0aDowLjkwNTUwNTtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjAuMjtwYWludC1vcmRlcjptYXJrZXJzIGZpbGwgc3Ryb2tlIgogICAgICAgICBpZD0icmVjdDItMSIKICAgICAgICAgd2lkdGg9IjMuOTY4NzUiCiAgICAgICAgIGhlaWdodD0iMC43OTM3NDk5OSIKICAgICAgICAgeD0iMS42MzcxMTgyIgogICAgICAgICB5PSItMy45MzYwNjAyIgogICAgICAgICByeT0iMC4zOTY4NzQ5OSIKICAgICAgICAgdHJhbnNmb3JtPSJyb3RhdGUoOTApIiAvPgogICAgPC9nPgogICAgPHJlY3QKICAgICAgIHN0eWxlPSJvcGFjaXR5OjAuMjtmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjA7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjAuMjY0NTgzMzM7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxO3BhaW50LW9yZGVyOm1hcmtlcnMgZmlsbCBzdHJva2UiCiAgICAgICBpZD0icmVjdDEiCiAgICAgICB3aWR0aD0iNi4zNDk5OTk5IgogICAgICAgaGVpZ2h0PSI2LjM0OTk5OTkiCiAgICAgICB4PSIwLjUyOTE2NjY0IgogICAgICAgeT0iMC41MjkxNjY2NCIKICAgICAgIHJ4PSIwLjk0MDc0MDciCiAgICAgICByeT0iMC45NDA3NDA3IiAvPgogIDwvZz4KPC9zdmc+Cg==';
+            const minusImage = () => {
+                const head = 'data:image/svg+xml;base64,';
+                let color = () => {
+                    switch (getBlockColor()) {
+                        case 'dark': return ['#fff', '#ffffff80'];
+                        case 'highContrast': return ['#000', '#00000080'];
+                        default: return ['#fff', '#00000033'];
+                    }
+                }
+                const svg = `<svg width="28" height="28" viewBox="0 0 7.408 7.408" xmlns="http://www.w3.org/2000/svg">
+                    <g paint-order="markers fill stroke">
+                    <g transform="translate(.165 .083)" fill="${color()[0]}">
+                        <rect width="3.969" height=".794" x="1.555" y="3.225" ry=".397" />
+                    </g>
+                    <rect width="6.35" height="6.35" x=".529" y=".529" rx=".941" ry=".941" fill="none" stroke="${color()[1]}"
+                        stroke-width=".265" stroke-linejoin="round" />
+                    </g>
+                </svg>`;
+                return head + btoa(svg);
+            }
+            const plusImage = () => {
+                const head = 'data:image/svg+xml;base64,';
+                let color = () => {
+                    switch (getBlockColor()) {
+                        case 'dark': return ['#fff', '#ffffff80'];
+                        case 'highContrast': return ['#000', '#00000080'];
+                        default: return ['#fff', '#00000033'];
+                    }
+                }
+                const svg = `<svg width="28" height="28" viewBox="0 0 7.408 7.408" xmlns="http://www.w3.org/2000/svg">
+                    <g paint-order="markers fill stroke">
+                    <g transform="translate(.165 .083)" fill="${color()[0]}">
+                        <rect width="3.969" height=".794" x="1.555" y="3.225" ry=".397" />
+                        <rect width="3.969" height=".794" x="1.637" y="-3.936" ry=".397" transform="rotate(90)" />
+                    </g>
+                    <rect width="6.35" height="6.35" x=".529" y=".529" rx=".941" ry=".941" fill="none" stroke="${color()[1]}"
+                        stroke-width=".265" stroke-linejoin="round" />
+                    </g>
+                </svg>`;
+                return head + btoa(svg);
+            }
 
             return {
                 PlusButton, MinusButton
