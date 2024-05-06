@@ -672,7 +672,7 @@
         );
 
         windowContent.appendChild(newOption({
-            text: mathBlock + ' (14)',
+            text: mathBlock + ' (15)',
             buttonText: HideBlockType.math ? expand : collapse,
             icon: typeIcons.mathIcon,
             runCode: (() => {
@@ -682,7 +682,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: booleanBlock + ' (11)',
+            text: booleanBlock + ' (12)',
             buttonText: HideBlockType.bool ? expand : collapse,
             icon: typeIcons.booleanIcon,
             runCode: (() => {
@@ -736,7 +736,7 @@
         );
 
         windowContent.appendChild(newOption({
-            text: miscellaneousBlock + ' (28)',
+            text: miscellaneousBlock + ' (29)',
             buttonText: HideBlockType.miscellaneous ? expand : collapse,
             icon: typeIcons.miscellaneousIcon,
             runCode: (() => {
