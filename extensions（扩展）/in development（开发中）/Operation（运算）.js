@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.3-β.4
+    // V2.9.3
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 

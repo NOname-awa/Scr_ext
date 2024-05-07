@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.2
+    // V2.9.3
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -60,6 +60,7 @@
             "OPERATION.LOOP_NUMBER": "让 [NUM] 在 [START] 到 [END] 中循环",
             "OPERATION.ROUND": "四舍五入 [NUM1] 到小数点后 [NUM2] 位",
             "OPERATION.MAP_OFF": "映射 [NUM] 从 [START1] ~ [END1] 到 [START2] ~ [END2]",
+            "OPERATION.FIND": "寻找 [MODE]",
             "OPERATION.BASE": "把 [INTO1] 进制的 [NUM] 转换为 [INTO2] 进制",
             "OPERATION.TO_BIN": "[NUM]₁₀ → 二进制",
             "OPERATION.TO_DEC": "[NUM]₂ → 十进制",
@@ -99,6 +100,8 @@
             "OPERATION.CONVERT": "转换 [STRING] 为 [MODE]",
             "OPERATION.JOIN": "连接文字 [STRING]",
             "OPERATION.GET_JOIN": "连接的文本",
+            "OPERATION.INF_JOIN": "连接",
+            "OPERATION.INF_JOIN_SEPARATOR": "和",
             "OPERATION.GET_TO_UNICODE": "[STRING] 的 Unicode",
             "OPERATION.UNICODE_TO_STRING": "Unicode 为 [STRING] 的字符",
             "OPERATION.SHUFFLE": "打乱 [STRING]",
@@ -117,6 +120,8 @@
             "OPERATION.IS_ANGLE_IN_RANGE": "角 [ANGLE1] 在角 [ANGLE2] 到角 [ANGLE3] 的 [MODE] 之间？",
             "OPERATION.CALCULATE_ANGLE_DIFFERENCE": "角度 [ANGLE1] 到 [ANGLE2] 的 [MODE]",
             "OPERATION.FIND_PARTITION": "把 [RANGE_START] 到 [RANGE_END] 等分为 [NUM_PARTITIONS] 个部分并获取 [VALUE] 的分区",
+            "OPERATION.CONTAIN_OPTIONS": "[OPERAND] =",
+            "OPERATION.CONTAIN_OPTIONS_SEPARATOR": "或",
             "OPERATION.GET_CONSTANT": "常量 [OPTION]",
             "OPERATION.COLOR_BLEND": "混合 [COLOR1] 与 [COLOR2] 比例 [RATIO] %",
             "OPERATION.OR": "[OPERAND1] 或 [OPERAND2]",
@@ -200,6 +205,7 @@
             "OPERATION.LOOP_NUMBER": "讓 [NUM] 在範圍 [START] 到 [END] 內循環",
             "OPERATION.ROUND": "將 [NUM1] 四捨五入到 [NUM2] 小數位",
             "OPERATION.MAP_OFF": "映射 [NUM] 從 [START1]～[END1] 到 [START2]～[END2]",
+            "OPERATION.FIND": "尋找 [MODE]",
             "OPERATION.BASE": "將 [NUM] 從進制 [INTO1] 轉換為進制 [INTO2]",
             "OPERATION.TO_BIN": "[NUM]₁₀ → 二進位制",
             "OPERATION.TO_DEC": "[NUM]₂ → 十進位制",
@@ -239,6 +245,8 @@
             "OPERATION.CONVERT": "把 [STRING] [MODE]",
             "OPERATION.JOIN": "組合字串 [STRING]",
             "OPERATION.GET_JOIN": "組合的字串",
+            "OPERATION.INF_JOIN": "字串組合",
+            "OPERATION.INF_JOIN_SEPARATOR": "",
             "OPERATION.GET_TO_UNICODE": "獲取 [STRING] 的 Unicode 碼",
             "OPERATION.UNICODE_TO_STRING": "將 Unicode [STRING] 轉換為字符",
             "OPERATION.SHUFFLE": "隨機排序 [STRING]",
@@ -257,6 +265,7 @@
             "OPERATION.IS_ANGLE_IN_RANGE": "∠ [ANGLE1] 在 ∠ [ANGLE2] 和 ∠ [ANGLE3] 之間的 [MODE]？",
             "OPERATION.CALCULATE_ANGLE_DIFFERENCE": "從 ∠ [ANGLE1] 到 ∠ [ANGLE2] 的 [MODE]",
             "OPERATION.FIND_PARTITION": "將範圍從 [RANGE_START] 到 [RANGE_END] 分割成 [NUM_PARTITIONS] 份，獲取第 [VALUE] 所屬的部分",
+            "OPERATION.CONTAIN_OPTIONS": "[OPERAND] 在",
             "OPERATION.GET_CONSTANT": "常數 [OPTION]",
             "OPERATION.COLOR_BLEND": "用比例 [RATIO] % 混合 [COLOR1] 和 [COLOR2]",
             "OPERATION.OR": "[OPERAND1] 或 [OPERAND2]",
@@ -348,6 +357,15 @@
         baseIcon: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjIwbW0iCiAgIGhlaWdodD0iMjBtbSIKICAgdmlld0JveD0iMCAwIDIwIDIwIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMSAoOTFiNjZiMDc4MywgMjAyMy0xMS0xNikiCiAgIHNvZGlwb2RpOmRvY25hbWU9ImJhc2VJY29uLnN2ZyIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgPHNvZGlwb2RpOm5hbWVkdmlldwogICBpZD0ibmFtZWR2aWV3MSIKICAgcGFnZWNvbG9yPSIjNTA1MDUwIgogICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgaW5rc2NhcGU6c2hvd3BhZ2VzaGFkb3c9IjAiCiAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICBpbmtzY2FwZTpwYWdlY2hlY2tlcmJvYXJkPSIwIgogICBpbmtzY2FwZTpkZXNrY29sb3I9IiM1MDUwNTAiCiAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgaW5rc2NhcGU6em9vbT0iNy45OTk5OTk5IgogICBpbmtzY2FwZTpjeD0iNDAuNDM3NTAxIgogICBpbmtzY2FwZTpjeT0iMzcuNTYyNSIKICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxOTIwIgogICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDI3IgogICBpbmtzY2FwZTp3aW5kb3cteD0iMTkxMiIKICAgaW5rc2NhcGU6d2luZG93LXk9Ii04IgogICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJzdmcxIiAvPgogICA8ZGVmcwogICBpZD0iZGVmczEiIC8+CiAgIAoKPHBhdGgKICAgc3R5bGU9ImZpbGw6I2ZmZmZmZjtmaWxsLW9wYWNpdHk6MTtzdHJva2Utd2lkdGg6MS40NjM0OCIKICAgZD0iTSA5LjA3MDU3MDMsMTEuODI4NTA5IDkuMDYzNjkwMyw4LjMzOTQyMzMgNy4xOCw4LjMyNTE3MDMgOS45ODM3OSw0LjY4MyBsIDIuODM3NjU0LDMuNjI5MzIzOCAtMS45NDE4MjIsMC4wMjcxMDEgLTAuMDA2OSwzLjQ4OTA4NjIgLTAuMDA2OSwzLjQ4OTA4NiBIIDkuOTcxNjU4IDkuMDc3NDQ4NCBaIgogICBpZD0icGF0aDIiCiAgIHNvZGlwb2RpOm5vZGV0eXBlcz0iY2NjY2NjY2NjY2MiIC8+PC9zdmc+Cg==',
         miscellaneousIcon: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjIwbW0iCiAgIGhlaWdodD0iMjBtbSIKICAgdmlld0JveD0iMCAwIDIwIDIwIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMSAoOTFiNjZiMDc4MywgMjAyMy0xMS0xNikiCiAgIHNvZGlwb2RpOmRvY25hbWU9Im1pc2NlbGxhbmVvdXNJY29uLnN2ZyIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgPHNvZGlwb2RpOm5hbWVkdmlldwogICBpZD0ibmFtZWR2aWV3MSIKICAgcGFnZWNvbG9yPSIjNTA1MDUwIgogICBib3JkZXJjb2xvcj0iI2VlZWVlZSIKICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgaW5rc2NhcGU6c2hvd3BhZ2VzaGFkb3c9IjAiCiAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICBpbmtzY2FwZTpwYWdlY2hlY2tlcmJvYXJkPSIwIgogICBpbmtzY2FwZTpkZXNrY29sb3I9IiM1MDUwNTAiCiAgIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIKICAgaW5rc2NhcGU6em9vbT0iOCIKICAgaW5rc2NhcGU6Y3g9IjMyLjgxMjUiCiAgIGlua3NjYXBlOmN5PSIzOC42ODc1IgogICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjE5MjAiCiAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9IjEwMjciCiAgIGlua3NjYXBlOndpbmRvdy14PSItOCIKICAgaW5rc2NhcGU6d2luZG93LXk9Ii04IgogICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJzdmcxIiAvPgogICA8ZGVmcwogICBpZD0iZGVmczEiIC8+CiAgIAoKPGNpcmNsZQogICBzdHlsZT0ib3BhY2l0eToxO2ZpbGw6I2ZmZmZmZjtzdHJva2U6I2ZmZmZmZjtzdHJva2Utd2lkdGg6MC41O3N0cm9rZS1kYXNoYXJyYXk6bm9uZSIKICAgaWQ9InBhdGgxIgogICBjeD0iMTAiCiAgIGN5PSIxMCIKICAgcj0iMSIgLz48Y2lyY2xlCiAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7c3Ryb2tlOiNmZmZmZmY7c3Ryb2tlLXdpZHRoOjAuNTtzdHJva2UtZGFzaGFycmF5Om5vbmUiCiAgIGlkPSJwYXRoMS05IgogICBjeD0iMTQiCiAgIGN5PSIxMCIKICAgcj0iMSIgLz48Y2lyY2xlCiAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7c3Ryb2tlOiNmZmZmZmY7c3Ryb2tlLXdpZHRoOjAuNTtzdHJva2UtZGFzaGFycmF5Om5vbmUiCiAgIGlkPSJwYXRoMS05LTAiCiAgIGN4PSI2IgogICBjeT0iMTAiCiAgIHI9IjEiIC8+PC9zdmc+Cg=='
     };
+
+    const getEmptyIcon = (c1, c3) => {
+        const head = 'data:image/svg+xml;base64,';
+        const emptyIcon = `<svg width="20mm" height="20mm" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="9.5" fill="${c1}" stroke="${c3}" />
+            </svg>
+        `;
+        return head + btoa(emptyIcon);
+    }
 
     const setting = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04LjI3MjA2IDIuNjgzNzdDOC40MDgxOCAyLjI3NTQzIDguNzkwMzIgMiA5LjIyMDc1IDJIMTAuNzc5MkMxMS4yMDk3IDIgMTEuNTkxOCAyLjI3NTQzIDExLjcyNzkgMi42ODM3N0wxMi4zMjE5IDQuNDY1OEMxMi43OTE0IDQuNjYzIDEzLjIzMDQgNC45MTgxOCAxMy42MzAyIDUuMjIyMzhMMTUuNDcyMSA0Ljg0NTQ3QzE1Ljg5MzggNC43NTkxNyAxNi4zMjM0IDQuOTUyNCAxNi41Mzg2IDUuMzI1MTZMMTcuMzE3OCA2LjY3NDg1QzE3LjUzMyA3LjA0NzYxIDE3LjQ4NTYgNy41MTYyNyAxNy4yIDcuODM4MzJMMTUuOTUyOSA5LjI0NDY4QzE1Ljk4NCA5LjQ5MjA4IDE2IDkuNzQ0MTcgMTYgMTBDMTYgMTAuMjU1OCAxNS45ODQgMTAuNTA3OSAxNS45NTI5IDEwLjc1NTNMMTcuMiAxMi4xNjE3QzE3LjQ4NTYgMTIuNDgzNyAxNy41MzMgMTIuOTUyNCAxNy4zMTc4IDEzLjMyNTJMMTYuNTM4NiAxNC42NzQ4QzE2LjMyMzQgMTUuMDQ3NiAxNS44OTM4IDE1LjI0MDggMTUuNDcyMSAxNS4xNTQ1TDEzLjYzMDIgMTQuNzc3NkMxMy4yMzA0IDE1LjA4MTggMTIuNzkxNCAxNS4zMzcgMTIuMzIxOSAxNS41MzQyTDExLjcyNzkgMTcuMzE2MkMxMS41OTE4IDE3LjcyNDYgMTEuMjA5NyAxOCAxMC43NzkyIDE4SDkuMjIwNzVDOC43OTAzMiAxOCA4LjQwODE4IDE3LjcyNDYgOC4yNzIwNiAxNy4zMTYyTDcuNjc4MDUgMTUuNTM0MkM3LjIwODYyIDE1LjMzNyA2Ljc2OTU1IDE1LjA4MTggNi4zNjk4MiAxNC43Nzc2TDQuNTI3OTIgMTUuMTU0NUM0LjEwNjIzIDE1LjI0MDggMy42NzY2MyAxNS4wNDc2IDMuNDYxNDEgMTQuNjc0OEwyLjY4MjE3IDEzLjMyNTJDMi40NjY5NiAxMi45NTI0IDIuNTE0NDIgMTIuNDgzNyAyLjggMTIuMTYxN0w0LjA0NzA4IDEwLjc1NTNDNC4wMTYgMTAuNTA3OSAzLjk5OTk5IDEwLjI1NTggMy45OTk5OSAxMEMzLjk5OTk5IDkuNzQ0MTYgNC4wMTYgOS40OTIwNyA0LjA0NzA3IDkuMjQ0NjZMMi44IDcuODM4MzJDMi41MTQ0MiA3LjUxNjI3IDIuNDY2OTYgNy4wNDc2MSAyLjY4MjE3IDYuNjc0ODVMMy40NjE0MSA1LjMyNTE2QzMuNjc2NjMgNC45NTI0IDQuMTA2MjMgNC43NTkxNyA0LjUyNzkyIDQuODQ1NDdMNi4zNjk4IDUuMjIyMzhDNi43Njk1NCA0LjkxODE4IDcuMjA4NjEgNC42NjMgNy42NzgwNSA0LjQ2NThMOC4yNzIwNiAyLjY4Mzc3Wk05Ljk5OTk5IDhDOC44OTU0MiA4IDcuOTk5OTkgOC44OTU0MyA3Ljk5OTk5IDEwQzcuOTk5OTkgMTEuMTA0NiA4Ljg5NTQyIDEyIDkuOTk5OTkgMTJDMTEuMTA0NiAxMiAxMiAxMS4xMDQ2IDEyIDEwQzEyIDguODk1NDMgMTEuMTA0NiA4IDkuOTk5OTkgOFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';;
     const close = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iMzIiCiAgIGhlaWdodD0iMzIiCiAgIHZpZXdCb3g9IjAgMCA4LjQ2NjY2NjIgOC40NjY2NjYyIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMSAoOTFiNjZiMDc4MywgMjAyMy0xMS0xNikiCiAgIHNvZGlwb2RpOmRvY25hbWU9Iue7mOWbvi5zdmciCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJuYW1lZHZpZXcxIgogICAgIHBhZ2Vjb2xvcj0iIzAwMDAwMCIKICAgICBib3JkZXJjb2xvcj0iIzAwMDAwMCIKICAgICBib3JkZXJvcGFjaXR5PSIwLjI1IgogICAgIGlua3NjYXBlOnNob3dwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiCiAgICAgaW5rc2NhcGU6cGFnZWNoZWNrZXJib2FyZD0iMCIKICAgICBpbmtzY2FwZTpkZXNrY29sb3I9IiNkMWQxZDEiCiAgICAgaW5rc2NhcGU6ZG9jdW1lbnQtdW5pdHM9Im1tIgogICAgIGlua3NjYXBlOnpvb209IjE1LjUwMTI3MyIKICAgICBpbmtzY2FwZTpjeD0iMjAuNzQwMjMzIgogICAgIGlua3NjYXBlOmN5PSIxMC45OTkwOTciCiAgICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxOTIwIgogICAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9IjEwMDAiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9Ii0xMSIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iLTExIgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ibGF5ZXIxIiAvPjxkZWZzCiAgICAgaWQ9ImRlZnMxIj48c3R5bGUKICAgICAgIGlkPSJzdHlsZTEiPi5jbHMtMXtmaWxsOm5vbmU7c3Ryb2tlOiNmZmY7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS13aWR0aDoycHg7fTwvc3R5bGU+PC9kZWZzPjxnCiAgICAgaW5rc2NhcGU6bGFiZWw9IuWbvuWxgiAxIgogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaWQ9ImxheWVyMSI+PGcKICAgICAgIGlkPSJnMSIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDAuMzM5NjkyNSwwLjMzOTY5MjUsLTAuMzM5NjkyNSwwLjMzOTY5MjUsNC4yMzM0NjU2LDEuNjkyNTY1NykiCiAgICAgICBpbmtzY2FwZTpsYWJlbD0iZzEiPjxsaW5lCiAgICAgICAgIGNsYXNzPSJjbHMtMSIKICAgICAgICAgeDE9IjMuNzQiCiAgICAgICAgIHkxPSI2LjQ4IgogICAgICAgICB4Mj0iMy43NCIKICAgICAgICAgeTI9IjEiCiAgICAgICAgIGlkPSJsaW5lMSIgLz48bGluZQogICAgICAgICBjbGFzcz0iY2xzLTEiCiAgICAgICAgIHgxPSIxIgogICAgICAgICB5MT0iMy43NCIKICAgICAgICAgeDI9IjYuNDgiCiAgICAgICAgIHkyPSIzLjc0IgogICAgICAgICBpZD0ibGluZTIiIC8+PC9nPjwvZz48L3N2Zz4K';
@@ -534,12 +552,37 @@
         }
     };
 
-    const newOption = ({ text, buttonText, runCode, icon }) => {
+    const blend = (c1, c2, ratio) => {
+        let r1 = parseInt(c1.substring(1, 3), 16);
+        let g1 = parseInt(c1.substring(3, 5), 16);
+        let b1 = parseInt(c1.substring(5, 7), 16);
+        let r2 = parseInt(c2.substring(1, 3), 16);
+        let g2 = parseInt(c2.substring(3, 5), 16);
+        let b2 = parseInt(c2.substring(5, 7), 16);
+        let r = Math.round(r1 * (1 - ratio) + r2 * ratio);
+        let g = Math.round(g1 * (1 - ratio) + g2 * ratio);
+        let b = Math.round(b1 * (1 - ratio) + b2 * ratio);
+        r = ('0' + (r || 0).toString(16)).slice(-2);
+        g = ('0' + (g || 0).toString(16)).slice(-2);
+        b = ('0' + (b || 0).toString(16)).slice(-2);
+        return '#' + r + g + b;
+    };
+
+    const newOption = ({ text, buttonText, runCode, icon, type }) => {
+        let typeColor = blockColor[type];
+        let color = () => {
+            switch (getBlockColor()) {
+                case 'dark': return [blend(typeColor?.color2, '#000000', 0.6), typeColor?.color2];
+                case 'highContrast': return [blend(typeColor?.color1, '#ffffff', 0.35), typeColor?.color2];
+                default: return [typeColor?.color1, typeColor?.color3];
+            }
+        }
+
         let optionDiv = document.createElement('div');
         optionDiv.style.display = 'flex';
         optionDiv.style.alignItems = 'center';
 
-        if (icon) {
+        if (icon && type) {
             let iconBorder = document.createElement('div');
             iconBorder.style.display = 'flex';
             iconBorder.style.justifyContent = 'center';
@@ -547,7 +590,10 @@
             iconBorder.style.width = '20px';
             iconBorder.style.height = '20px';
             iconBorder.style.borderRadius = '10px';
-            iconBorder.style.backgroundImage = `url(${typeIcons.emptyIcon[getBlockColor()]})`;
+            iconBorder.style.backgroundImage = `url(${blockColor.useTypeColor
+                ? (getEmptyIcon(color()[0], color()[1]))
+                : (typeIcons.emptyIcon[getBlockColor()])})`;
+
             iconBorder.style.backgroundSize = 'cover';
             if (isRTL) {
                 iconBorder.style.marginLeft = '8px';
@@ -575,7 +621,7 @@
         optionButton.style.margin = '4px';
         optionButton.style.padding = '9.6px 12px';
         optionButton.style.borderRadius = '8px';
-        optionButton.style.backgroundColor = '#6859FF';
+        optionButton.style.backgroundColor = /*typeColor?.color1 ?? */'#6859FF';
         optionButton.style.color = '#FFFFFF';
         optionButton.style.fontWeight = '700';
         optionButton.style.fontSize = '14px';
@@ -626,21 +672,23 @@
         );
 
         windowContent.appendChild(newOption({
-            text: mathBlock + ' (14)',
+            text: mathBlock + ' (15)',
             buttonText: HideBlockType.math ? expand : collapse,
             icon: typeIcons.mathIcon,
             runCode: (() => {
                 showAndHideType('math', !HideBlockType.math);
-            })
+            }),
+            type: 'math'
         }));
 
         windowContent.appendChild(newOption({
-            text: booleanBlock + ' (11)',
+            text: booleanBlock + ' (12)',
             buttonText: HideBlockType.bool ? expand : collapse,
             icon: typeIcons.booleanIcon,
             runCode: (() => {
                 showAndHideType('bool', !HideBlockType.bool);
-            })
+            }),
+            type: 'bool'
         }));
 
         windowContent.appendChild(newOption({
@@ -649,7 +697,8 @@
             icon: typeIcons.stringIcon,
             runCode: (() => {
                 showAndHideType('string', !HideBlockType.string);
-            })
+            }),
+            type: 'string'
         }));
 
         windowContent.appendChild(newOption({
@@ -658,7 +707,8 @@
             icon: typeIcons.splitIcon,
             runCode: (() => {
                 showAndHideType('split', !HideBlockType.split);
-            })
+            }),
+            type: 'split'
         }));
 
         windowContent.appendChild(newOption({
@@ -667,7 +717,8 @@
             icon: typeIcons.graphIcon,
             runCode: (() => {
                 showAndHideType('graph', !HideBlockType.graph);
-            })
+            }),
+            type: 'graph'
         }));
 
         windowContent.appendChild(newOption({
@@ -676,7 +727,8 @@
             icon: typeIcons.baseIcon,
             runCode: (() => {
                 showAndHideType('base', !HideBlockType.base);
-            })
+            }),
+            type: 'base'
         }));
 
         windowContent.appendChild(
@@ -684,12 +736,13 @@
         );
 
         windowContent.appendChild(newOption({
-            text: miscellaneousBlock + ' (28)',
+            text: miscellaneousBlock + ' (29)',
             buttonText: HideBlockType.miscellaneous ? expand : collapse,
             icon: typeIcons.miscellaneousIcon,
             runCode: (() => {
                 showAndHideType('miscellaneous', !HideBlockType.miscellaneous);
-            })
+            }),
+            type: 'miscellaneous'
         }));
 
         if ((!HideBlockType.miscellaneous)) {
@@ -768,6 +821,374 @@
         expandMenu: true,
         letterCase: true, // 函数名末尾包含 “ci” 表示忽略大小写
         miscellaneous: true
+    };
+
+    let blockColor = {
+        useTypeColor: true,
+        math: {
+            color1: '#62c22e',
+            color2: '#4e9b25',
+            color3: '#4e9b25'
+        },
+        bool: {
+            color1: '#00a889',
+            color2: '#00977b',
+            color3: '#00866e'
+        },
+        string: {
+            color1: '#cfb930',
+            color2: '#baa72b',
+            color3: '#a69426'
+        },
+        split: {
+            color1: '#cf8d30',
+            color2: '#ba7f2b',
+            color3: '#a67126'
+        },
+        graph: {
+            color1: '#ff976c',
+            color2: '#e68861',
+            color3: '#cc7956'
+        },
+        base: {
+            color1: '#d65cbc',
+            color2: '#c153a9',
+            color3: '#ab4a96'
+        },
+        miscellaneous: {
+            color1: '#6859ff',
+            color2: '#5e50e6',
+            color3: '#5347cc'
+        }
+    };
+
+    const getColor = (type) => {
+        if (!blockColor.useTypeColor) return {};
+        return blockColor[type] ?? {};
+    };
+
+    const setExpandableBlocks = (expandableBlocks, runtime) => {
+        // 在 Gandi 编辑器获取 scratchBlocks 与获取 VM 的方法来自 https://github.com/FurryR/lpp-scratch 的LPP扩展
+        const hijack = (fn) => {
+            const _orig = Function.prototype.apply;
+            Function.prototype.apply = (thisArg) => thisArg;
+            const result = fn();
+            Function.prototype.apply = _orig;
+            return result;
+        };
+        const getScratch = (runtime) => {
+            function getEvent(e) {
+                return e instanceof Array ? e[e.length - 1] : e;
+            }
+            const vm = hijack(
+                getEvent(runtime._events['QUESTION'])
+            ).props.vm;
+            return {
+                scratchBlocks: hijack(
+                    getEvent(vm._events['EXTENSION_ADDED'])
+                )?.ScratchBlocks,
+                vm
+            };
+        }
+
+        // 创建按钮
+        const createButtons = (Blockly) => {
+            // 按钮
+            class FieldButton extends Blockly.FieldImage {
+                constructor(src) {
+                    super(src, 28, 28, undefined, false);
+                    this.initialized = false;
+                }
+                init() {
+                    super.init();
+                    if (!this.initialized) {
+                        // 第一次初始化
+                        Blockly.bindEventWithChecks_(
+                            this.getSvgRoot(), 'mousedown', this, (e) => {
+                                e.stopPropagation();
+                                // 阻止事件冒泡，要不然你点按钮就会执行积木（点击积木）
+                            });
+                        Blockly.bindEventWithChecks_(
+                            this.getSvgRoot(), 'mouseup', this, this.handleClick.bind(this));
+                        // 绑定上这个按钮点击事件
+                    }
+                    this.initialized = true;
+                }
+
+                handleClick(e) {
+                    if (!this.sourceBlock_ || !this.sourceBlock_.workspace) {
+                        return false;
+                    }
+                    if (this.sourceBlock_.workspace.isDragging()) {
+                        return false;
+                    }
+                    if (this.sourceBlock_.isInFlyout) {
+                        return false;
+                    }
+                    this.onclick(e);
+                }
+
+                onclick(e) {
+                    // 子类实现
+                }
+            }
+
+            // + 按钮
+            class PlusButton extends FieldButton {
+                constructor() {
+                    super(plusImage());
+                }
+
+                onclick() {
+                    const block = this.sourceBlock_
+                    // 增加积木数量改变
+                    block.itemCount_ += block.paramStep;
+                    block.updateShape(); // 更新
+                }
+            }
+
+            // - 按钮
+            class MinusButton extends FieldButton {
+                constructor() {
+                    super(minusImage());
+                }
+
+                onclick() {
+                    // 获取这个 field 的积木
+                    const block = this.sourceBlock_;
+                    // 增加积木数量改变
+                    block.itemCount_ -= block.paramStep;
+                    if (block.itemCount_ < 0) {
+                        // 不能有 -1 个参数
+                        block.itemCount_ = 0;
+                    }
+                    block.updateShape(); // 更新
+                }
+            }
+
+            // 图片
+            const minusImage = () => {
+                const head = 'data:image/svg+xml;base64,';
+                let color = () => {
+                    switch (getBlockColor()) {
+                        case 'dark': return ['#fff', '#ffffff80'];
+                        case 'highContrast': return ['#000', '#00000080'];
+                        default: return ['#fff', '#00000033'];
+                    }
+                }
+                const svg = `<svg width="28" height="28" viewBox="0 0 7.408 7.408" xmlns="http://www.w3.org/2000/svg">
+                    <g paint-order="markers fill stroke">
+                    <g transform="translate(.165 .083)" fill="${color()[0]}">
+                        <rect width="3.969" height=".794" x="1.555" y="3.225" ry=".397" />
+                    </g>
+                    <rect width="6.35" height="6.35" x=".529" y=".529" rx=".941" ry=".941" fill="none" stroke="${color()[1]}"
+                        stroke-width=".265" stroke-linejoin="round" />
+                    </g>
+                </svg>`;
+                return head + btoa(svg);
+            }
+
+            const plusImage = () => {
+                const head = 'data:image/svg+xml;base64,';
+                let color = () => {
+                    switch (getBlockColor()) {
+                        case 'dark': return ['#fff', '#ffffff80'];
+                        case 'highContrast': return ['#000', '#00000080'];
+                        default: return ['#fff', '#00000033'];
+                    }
+                }
+                const svg = `<svg width="28" height="28" viewBox="0 0 7.408 7.408" xmlns="http://www.w3.org/2000/svg">
+                    <g paint-order="markers fill stroke">
+                    <g transform="translate(.165 .083)" fill="${color()[0]}">
+                        <rect width="3.969" height=".794" x="1.555" y="3.225" ry=".397" />
+                        <rect width="3.969" height=".794" x="1.637" y="-3.936" ry=".397" transform="rotate(90)" />
+                    </g>
+                    <rect width="6.35" height="6.35" x=".529" y=".529" rx=".941" ry=".941" fill="none" stroke="${color()[1]}"
+                        stroke-width=".265" stroke-linejoin="round" />
+                    </g>
+                </svg>`;
+                return head + btoa(svg);
+            }
+
+            return {
+                PlusButton, MinusButton
+            };
+        }
+        const createExpandableBlock = (runtime, Blockly) => {
+
+            const { PlusButton, MinusButton } = createButtons(Blockly);
+            // 这个是 scratch 函数的 utils
+            const ProcedureUtils = Blockly.ScratchBlocks.ProcedureUtils;
+
+            return {
+                attachShadow_: function (input,
+                    argumentType) {
+                    if (argumentType == 'n' || argumentType == 's') {
+                        var blockType = argumentType == 'n' ? 'math_number' : 'text';
+                        Blockly.Events.disable();
+                        try {
+                            var newBlock = this.workspace.newBlock(blockType);
+                            if (argumentType == 'n') {
+                                newBlock.setFieldValue('', 'NUM');
+                            } else {
+                                newBlock.setFieldValue('', 'TEXT');
+                            }
+                            newBlock.setShadow(true);
+                            if (!this.isInsertionMarker()) {
+                                newBlock.initSvg();
+                                newBlock.render(false);
+                            }
+                        } finally {
+                            Blockly.Events.enable();
+                        }
+                        if (Blockly.Events.isEnabled()) {
+                            Blockly.Events.fire(new Blockly.Events.BlockCreate(newBlock));
+                        }
+                        newBlock.outputConnection.connect(input.connection);
+                    }
+                },
+
+                updateShape: function () {
+                    var wasRendered = this.rendered;
+                    this.rendered = false;
+
+                    // 更新参数
+                    Blockly.Events.setGroup(true);
+                    // 先记录现在的 mutation
+                    var oldExtraState = Blockly.Xml.domToText(this.mutationToDom(this));
+                    // 创建新的积木
+                    for (var i = 0; i < this.itemCount_; i++) {
+                        if (!this.getInput('ADD' + i)) {
+                            const input = this.appendValueInput('ADD' + i);
+                            if (this.argType == INPUT_TYPES.BOOLEAN) {
+                                input.setCheck('Boolean');
+                            } else {
+                                this.attachShadow_(input, this.argType);
+                            }
+                            if (i > 0 && this.separatorText) {
+                                input.insertFieldAt(0, this.separatorText, null); // 插入分隔符文本
+                            }
+                        }
+                    }
+
+                    // 将 + - 按钮移动到最右边
+                    this.moveInputBefore('PLUSMINUS', null)
+                    if (runtime._editingTarget) {
+                        // 移除 input 并记录
+                        const blocks = runtime._editingTarget.blocks;
+                        const targetBlock = blocks.getBlock(this.id);
+                        const toDel = [];
+                        while (this.getInput('ADD' + i)) {
+                            const input = targetBlock.inputs['ADD' + i];
+                            if (input) {
+                                if (input.block !== null) {
+                                    const blockInInput = blocks.getBlock(input.block);
+                                    blockInInput.topLevel = true;
+                                    blockInInput.parent = null;
+                                    blocks.moveBlock({
+                                        id: blockInInput.id,
+                                        oldParent: this.id,
+                                        oldInput: 'ADD' + i,
+                                        newParent: undefined,
+                                        newInput: undefined,
+                                        //newCoordinate: e.newCoordinate
+                                    });
+                                }
+                                if (input.shadow !== null && input.shadow == input.block) {
+                                    blocks.deleteBlock(input.shadow);
+                                }
+                            }
+                            toDel.push('ADD' + i)
+                            //delete targetBlock.inputs['ADD' + i]
+                            this.removeInput('ADD' + i);
+                            i++;
+                        }
+                        setTimeout(() => {
+                            toDel.forEach((i) => {
+                                delete targetBlock.inputs[i];
+                            })
+                        }, 0);
+                    }
+
+                    // 更新 oldItemCount，oldItemCount 用于生成 domMutation 的
+                    this.oldItemCount = this.itemCount_;
+                    // 新的 mutation
+                    const newExtraState = Blockly.Xml.domToText(this.mutationToDom(this));
+                    if (oldExtraState != newExtraState) {
+                        // 判断是否一样，不一样就 fire 一个 mutation 更新事件
+                        Blockly.Events.fire(
+                            new Blockly.Events.BlockChange(
+                                this, 'mutation', null,
+                                oldExtraState, newExtraState, // 状态
+                            ),
+                        );
+                    }
+                    Blockly.Events.setGroup(false);
+
+                    this.rendered = wasRendered;
+                    if (wasRendered && !this.isInsertionMarker()) {
+                        this.initSvg();
+                        this.render();
+                    }
+                },
+                mutationToDom: function () {
+                    // 可以保存别的数据，会保存到 sb3 中，oldItemCount 就是有多少个参数
+                    const container = document.createElement('mutation');
+                    container.setAttribute('items', `${this.oldItemCount}`);
+                    return container;
+                },
+                domToMutation: function (xmlElement) {
+                    // 读取 mutationToDom 保存的数据
+                    this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 0);
+                    this.updateShape(); // 读了之后更新
+                },
+                init: function (attributes) {
+                    // 积木初始化
+                    this.itemCount_ = attributes.defaultItemCount || 0;
+                    this.oldItemCount = this.itemCount_;
+                    this.paramStep = attributes.paramStep || 1;
+
+                    this.plusButton = new PlusButton();
+                    this.minusButton = new MinusButton();
+
+                    this.appendDummyInput("PLUSMINUS")
+                        .appendField(this.plusButton)
+                        .appendField(this.minusButton);
+
+                    this.argType = attributes.type;
+                    this.separatorText = attributes.separatorText;
+                },
+            }
+        }
+        const { scratchBlocks } = getScratch(runtime);
+        if (!scratchBlocks) return;
+        const expandableAttr = createExpandableBlock(runtime, scratchBlocks);
+        scratchBlocks.Blocks = new Proxy(scratchBlocks.Blocks, {
+            set(target, property, value) {
+                // 设置
+                if (expandableBlocks[property]) {
+                    Object.keys(expandableAttr).forEach(key => {
+                        if (key != 'init') {
+                            // 设置，除了 init，后面设置
+                            value[key] = expandableAttr[key];
+                        }
+                    });
+                    const orgInit = value.init;
+                    value.init = function () {
+                        // 先用原本的 init
+                        orgInit.call(this);
+                        // 然后再 init expandable 的
+                        expandableAttr.init.call(this, expandableBlocks[property]);
+                    }
+                }
+                return Reflect.set(target, property, value);
+            },
+        })
+    }
+    const INPUT_TYPES = {
+        STRING: 's',
+        NUMBER: 'n',
+        BOOLEAN: 'b'
     };
 
     const sep = (hide) => [
@@ -1150,8 +1571,8 @@
 
     const getInfo = () => ({
         color1: '#6859ff',
-        color2: '#5E50E6',
-        color3: '#5347CC',
+        color2: '#5e50e6',
+        color3: '#5347cc',
         menuIconURI: blockPaletteIcons ? typeIcons.operatorsIcon[getBlockColor()] : undefined,
         id: 'OPERATION',
         name: formatMessage({
@@ -1172,129 +1593,130 @@
                     default: 'Setting'
                 }),
             },
-            {
-                opcode: 'exponent',
-                blockType: BlockType.REPORTER,
-                text: '[NUM1] ↑ [NUM2]',
-                arguments: {
-                    NUM1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+            ...[
+                {
+                    opcode: 'exponent',
+                    blockType: BlockType.REPORTER,
+                    text: '[NUM1] ↑ [NUM2]',
+                    arguments: {
+                        NUM1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        NUM2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
                     },
-                    NUM2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: HideBlockType.math
-            },
-            {
-                opcode: 'root',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.ROOT',
-                    default: '[NUM1] √ [NUM2]'
-                }),
-                arguments: {
-                    NUM1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+                {
+                    opcode: 'root',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.ROOT',
+                        default: '[NUM1] √ [NUM2]'
+                    }),
+                    arguments: {
+                        NUM1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        NUM2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        RTL_ROOT: {
+                            type: ArgumentType.IMAGE,
+                            dataURI: rtlRoot,
+                            flipRTL: true
+                        }
                     },
-                    NUM2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    },
-                    RTL_ROOT: {
-                        type: ArgumentType.IMAGE,
-                        dataURI: rtlRoot,
-                        flipRTL: true
-                    }
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: HideBlockType.math
-            },
-            {
-                opcode: 'negative',
-                blockType: BlockType.REPORTER,
-                text: '- [NUM]',
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
+                {
+                    opcode: 'negative',
+                    blockType: BlockType.REPORTER,
+                    text: '- [NUM]',
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: HideBlockType.math
-            },
-            ...sep(HideBlockType.math),
-            {
-                opcode: 'constrain',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CONSTRAIN',
-                    default: 'constrain [NUM] low [LOW] high [HIGH]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '50'
+                ...sep(HideBlockType.math),
+                {
+                    opcode: 'constrain',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CONSTRAIN',
+                        default: 'constrain [NUM] low [LOW] high [HIGH]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '50'
+                        },
+                        LOW: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        },
+                        HIGH: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        }
                     },
-                    LOW: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1'
-                    },
-                    HIGH: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    }
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: HideBlockType.math
-            },
-            {
-                opcode: 'loopNum',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.LOOP_NUMBER',
-                    default: '[NUM] loop in [START] to [END]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1'
+                {
+                    opcode: 'loopNum',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.LOOP_NUMBER',
+                        default: '[NUM] loop in [START] to [END]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        },
+                        START: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        },
+                        END: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '4'
+                        }
                     },
-                    START: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1'
-                    },
-                    END: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '4'
-                    }
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: HideBlockType.math
-            },
 
-            {
-                opcode: 'round',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.ROUND',
-                    default: 'round [NUM1] to [NUM2] decimal places'
-                }),
-                arguments: {
-                    NUM1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '3.14'
+                {
+                    opcode: 'round',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.ROUND',
+                        default: 'round [NUM1] to [NUM2] decimal places'
+                    }),
+                    arguments: {
+                        NUM1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '3.14'
+                        },
+                        NUM2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        },
                     },
-                    NUM2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1'
-                    },
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'round'}">
                         <value name="NUM1">
                             <shadow type="math_number">
@@ -1308,84 +1730,100 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.math
-            },
+                    hideFromPalette: HideBlockType.math
+                },
 
-            {
-                opcode: 'mapOff',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.MAP_OFF',
-                    default: 'map [NUM] from [START1] ~ [END1] to [START2] ~ [END2]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
+                {
+                    opcode: 'mapOff',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.MAP_OFF',
+                        default: 'map [NUM] from [START1] ~ [END1] to [START2] ~ [END2]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        START1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        END1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        START2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        END2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1000'
+                        }
                     },
-                    START1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    END1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    START2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    END2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1000'
-                    }
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: HideBlockType.math
-            },
-            ...sep(rareHideAndSow('math')),
-            {
-                opcode: 'atan2Block',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.ATAN2',
-                    default: 'atan2 x: [NUM2] y: [NUM1]'
-                }),
-                arguments: {
-                    NUM1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+                {
+                    opcode: 'find',
+                    disableMonitor: true,
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.FIND',
+                        default: 'find [MODE]'
+                    }),
+                    arguments: {
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'SPLIT_ANALYSIS_MODE'
+                        }
                     },
-                    NUM2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
+                    hideFromPalette: HideBlockType.math
                 },
-                hideFromPalette: rareHideAndSow('math')
-            },
+                ...sep(rareHideAndSow('math')),
+                {
+                    opcode: 'atan2Block',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.ATAN2',
+                        default: 'atan2 x: [NUM2] y: [NUM1]'
+                    }),
+                    arguments: {
+                        NUM1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        NUM2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('math')
+                },
 
-            {
-                opcode: 'logWithBase',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.LOG_WITH_BASE',
-                    default: 'log base [BASE] of [NUM]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+                {
+                    opcode: 'logWithBase',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.LOG_WITH_BASE',
+                        default: 'log base [BASE] of [NUM]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        BASE: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        }
                     },
-                    BASE: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    }
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正数输入框 (math_positive_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正数输入框 (math_positive_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'logWithBase'}">
                         <value name="NUM">
                             <shadow type="math_number">
@@ -1399,28 +1837,28 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: rareHideAndSow('math')
-            },
-
-            {
-                opcode: 'factorial',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.FACTORIAL',
-                    default: 'factorial [NUM]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
+                    hideFromPalette: rareHideAndSow('math')
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+
+                {
+                    opcode: 'factorial',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.FACTORIAL',
+                        default: 'factorial [NUM]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'factorial'}">
                         <value name="NUM">
                             <shadow type="math_whole_number">
@@ -1429,75 +1867,76 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: rareHideAndSow('math')
-            },
+                    hideFromPalette: rareHideAndSow('math')
+                },
 
-            ...sep(rareHideAndSow('math')),
-            {
-                opcode: 'cubeRoot',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CUBE_ROOT',
-                    default: '∛ [NUM]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
-                },
-                hideFromPalette: rareHideAndSow('math')
-            },
-            {
-                opcode: 'toPercent',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TO_PERCENT',
-                    default: '[NUM] %'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
-                },
-                hideFromPalette: rareHideAndSow('math')
-            },
-            ...sep(rareHideAndSow('math')),
-            {
-                opcode: 'percentOf',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.PERCENT_OF',
-                    default: '[NUM1] % of [NUM2]'
-                }),
-                arguments: {
-                    NUM1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+                ...sep(rareHideAndSow('math')),
+                {
+                    opcode: 'cubeRoot',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CUBE_ROOT',
+                        default: '∛ [NUM]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
                     },
-                    NUM2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
+                    hideFromPalette: rareHideAndSow('math')
                 },
-                hideFromPalette: rareHideAndSow('math')
-            },
-            {
-                opcode: 'calculate',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE',
-                    default: 'calculate [TEXT]'
-                }),
-                arguments: {
-                    TEXT: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '√16 + π + abs(-1) (-1)'
-                    }
+                {
+                    opcode: 'toPercent',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TO_PERCENT',
+                        default: '[NUM] %'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('math')
                 },
-                hideFromPalette: rareHideAndSow('math')
-            },
+                ...sep(rareHideAndSow('math')),
+                {
+                    opcode: 'percentOf',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.PERCENT_OF',
+                        default: '[NUM1] % of [NUM2]'
+                    }),
+                    arguments: {
+                        NUM1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        NUM2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('math')
+                },
+                {
+                    opcode: 'calculate',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE',
+                        default: 'calculate [TEXT]'
+                    }),
+                    arguments: {
+                        TEXT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '√16 + π + abs(-1) (-1)'
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('math')
+                }
+            ].map(obj => ({ ...obj, ...{ ...getColor('math') } })),
             ...sep(HideBlockType.math),
             {
                 blockType: BlockType.LABEL,
@@ -1507,39 +1946,40 @@
                 }),
                 hideFromPalette: HideBlockType.bool
             },
-            {
-                opcode: 'booleanMenu',
-                blockType: BlockType.BOOLEAN,
-                disableMonitor: true,
-                text: '[BOOLEAN]',
-                arguments: {
-                    BOOLEAN: {
-                        type: ArgumentType.STRING,
-                        menu: 'BOOLEAN_MENU'
-                    }
+            ...[
+                {
+                    opcode: 'booleanMenu',
+                    blockType: BlockType.BOOLEAN,
+                    disableMonitor: true,
+                    text: '[BOOLEAN]',
+                    arguments: {
+                        BOOLEAN: {
+                            type: ArgumentType.STRING,
+                            menu: 'BOOLEAN_MENU'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.bool
                 },
-                hideFromPalette: HideBlockType.bool
-            },
 
-            {
-                opcode: 'probability',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.RANDOM',
-                    default: 'random'
-                }) + ': [NUM] %',
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '50'
-                    }
+                {
+                    opcode: 'probability',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.RANDOM',
+                        default: 'random'
+                    }) + ': [NUM] %',
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '50'
+                        }
+                    },
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正数输入框 (math_positive_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正数输入框 (math_positive_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'probability'}">
                         <value name="NUM">
                             <shadow type="math_positive_number">
@@ -1548,204 +1988,220 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.bool
-            },
+                    hideFromPalette: HideBlockType.bool
+                },
 
-            ...sep(HideBlockType.bool),
-            {
-                opcode: 'isTrue',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.IS_TRUE',
-                    default: '[OPERAND] is true?'
-                }),
-                arguments: {
-                    OPERAND: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
-                    }
+                ...sep(HideBlockType.bool),
+                {
+                    opcode: 'isTrue',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.IS_TRUE',
+                        default: '[OPERAND] is true?'
+                    }),
+                    arguments: {
+                        OPERAND: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: HideBlockType.bool
                 },
-                hideFromPalette: HideBlockType.bool
-            },
-            {
-                opcode: 'isFalse',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.IS_FALSE',
-                    default: '[OPERAND] is false?'
-                }),
-                arguments: {
-                    OPERAND: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
-                    }
+                {
+                    opcode: 'isFalse',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.IS_FALSE',
+                        default: '[OPERAND] is false?'
+                    }),
+                    arguments: {
+                        OPERAND: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('bool')
                 },
-                hideFromPalette: rareHideAndSow('bool')
-            },
-            {
-                opcode: 'checkType',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.CHECK_TYPE',
-                    default: '[INPUT] is [MODE] ?'
-                }),
-                arguments: {
-                    INPUT: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
+                {
+                    opcode: 'checkType',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.CHECK_TYPE',
+                        default: '[INPUT] is [MODE] ?'
+                    }),
+                    arguments: {
+                        INPUT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'CHECK_TYPE',
+                            defaultValue: 'number'
+                        }
                     },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'CHECK_TYPE',
-                        defaultValue: 'number'
-                    }
+                    hideFromPalette: HideBlockType.bool
                 },
-                hideFromPalette: HideBlockType.bool
-            },
-            ...sep(HideBlockType.bool),
-            {
-                opcode: 'compare',
-                blockType: BlockType.BOOLEAN,
-                text: '[OPERAND1] [SYMBOL] [OPERAND2]',
-                arguments: {
-                    OPERAND1: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
+                {
+                    opcode: 'containOptions_ci',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.CONTAIN_OPTIONS',
+                        default: 'is [OPERAND] in'
+                    }),
+                    arguments: {
+                        OPERAND: {
+                            type: ArgumentType.STRING,
+                            defalutValue: ''
+                        }
                     },
-                    OPERAND2: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '50'
-                    },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        menu: 'EQUAL_SYMBOL',
-                        defaultValue: 'unequal'
-                    }
+                    hideFromPalette: HideBlockType.bool
                 },
-                hideFromPalette: HideBlockType.bool
-            },
-            {
-                opcode: 'continuousCompare',
-                blockType: BlockType.BOOLEAN,
-                text: '[OPERAND1] [SYMBOL1] [OPERAND2] [SYMBOL2] [OPERAND3]',
-                arguments: {
-                    OPERAND1: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
+                ...sep(HideBlockType.bool),
+                {
+                    opcode: 'compare',
+                    blockType: BlockType.BOOLEAN,
+                    text: '[OPERAND1] [SYMBOL] [OPERAND2]',
+                    arguments: {
+                        OPERAND1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        },
+                        OPERAND2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '50'
+                        },
+                        SYMBOL: {
+                            type: ArgumentType.STRING,
+                            menu: 'EQUAL_SYMBOL',
+                            defaultValue: 'unequal'
+                        }
                     },
-                    OPERAND2: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
-                    },
-                    OPERAND3: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ''
-                    },
-                    SYMBOL1: {
-                        type: ArgumentType.STRING,
-                        menu: 'EQUAL_SYMBOL',
-                        defaultValue: 'lessOrEqual'
-                    },
-                    SYMBOL2: {
-                        type: ArgumentType.STRING,
-                        menu: 'EQUAL_SYMBOL',
-                        defaultValue: 'lessOrEqual'
-                    }
+                    hideFromPalette: HideBlockType.bool
                 },
-                hideFromPalette: rareHideAndSow('bool')
-            },
-            {
-                opcode: 'approximatelyEqual',
-                blockType: BlockType.BOOLEAN,
-                text: '[OPERAND1] ≈ [OPERAND2] ± [NUM]',
-                arguments: {
-                    OPERAND1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '5'
+                {
+                    opcode: 'continuousCompare',
+                    blockType: BlockType.BOOLEAN,
+                    text: '[OPERAND1] [SYMBOL1] [OPERAND2] [SYMBOL2] [OPERAND3]',
+                    arguments: {
+                        OPERAND1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        },
+                        OPERAND2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        },
+                        OPERAND3: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ''
+                        },
+                        SYMBOL1: {
+                            type: ArgumentType.STRING,
+                            menu: 'EQUAL_SYMBOL',
+                            defaultValue: 'lessOrEqual'
+                        },
+                        SYMBOL2: {
+                            type: ArgumentType.STRING,
+                            menu: 'EQUAL_SYMBOL',
+                            defaultValue: 'lessOrEqual'
+                        }
                     },
-                    OPERAND2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '6'
-                    },
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1'
-                    }
+                    hideFromPalette: rareHideAndSow('bool')
                 },
-                hideFromPalette: HideBlockType.bool
-            },
-            ...sep(rareHideAndSow('bool')),
-            {
-                opcode: 'logicGateOperation',
-                blockType: BlockType.BOOLEAN,
-                text: '[OPERAND1] [SYMBOL] [OPERAND2]',
-                arguments: {
-                    OPERAND1: {
-                        type: ArgumentType.BOOLEAN
+                {
+                    opcode: 'approximatelyEqual',
+                    blockType: BlockType.BOOLEAN,
+                    text: '[OPERAND1] ≈ [OPERAND2] ± [NUM]',
+                    arguments: {
+                        OPERAND1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '5'
+                        },
+                        OPERAND2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '6'
+                        },
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        }
                     },
-                    OPERAND2: {
-                        type: ArgumentType.BOOLEAN
-                    },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        menu: 'LOGIC_GATE_SYMBOL'
-                    }
+                    hideFromPalette: HideBlockType.bool
                 },
-                hideFromPalette: rareHideAndSow('bool')
-            },
-            ...sep(rareHideAndSow('bool')),
-            {
-                opcode: 'startEndWith',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.START_END_WITH',
-                    default: 'does [STRING1] [POSITION] with [STRING2] ?'
-                }),
-                arguments: {
-                    STRING1: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        })
+                ...sep(rareHideAndSow('bool')),
+                {
+                    opcode: 'logicGateOperation',
+                    blockType: BlockType.BOOLEAN,
+                    text: '[OPERAND1] [SYMBOL] [OPERAND2]',
+                    arguments: {
+                        OPERAND1: {
+                            type: ArgumentType.BOOLEAN
+                        },
+                        OPERAND2: {
+                            type: ArgumentType.BOOLEAN
+                        },
+                        SYMBOL: {
+                            type: ArgumentType.STRING,
+                            menu: 'LOGIC_GATE_SYMBOL'
+                        }
                     },
-                    STRING2: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE_CONTAINS',
-                            default: 'a'
-                        })
-                    },
-                    POSITION: {
-                        type: ArgumentType.STRING,
-                        menu: 'POSITION'
-                    }
+                    hideFromPalette: rareHideAndSow('bool')
                 },
-                hideFromPalette: rareHideAndSow('bool')
-            },
-            {
-                opcode: 'isBetween',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.IS_BETWEEN',
-                    default: 'is [NUM] between [START] and [END] ?'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '5'
+                ...sep(rareHideAndSow('bool')),
+                {
+                    opcode: 'startEndWith',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.START_END_WITH',
+                        default: 'does [STRING1] [POSITION] with [STRING2] ?'
+                    }),
+                    arguments: {
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            })
+                        },
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE_CONTAINS',
+                                default: 'a'
+                            })
+                        },
+                        POSITION: {
+                            type: ArgumentType.STRING,
+                            menu: 'POSITION'
+                        }
                     },
-                    START: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1'
-                    },
-                    END: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    }
+                    hideFromPalette: rareHideAndSow('bool')
                 },
-                hideFromPalette: rareHideAndSow('bool')
-            },
+                {
+                    opcode: 'isBetween',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.IS_BETWEEN',
+                        default: 'is [NUM] between [START] and [END] ?'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '5'
+                        },
+                        START: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1'
+                        },
+                        END: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('bool')
+                }
+            ].map(obj => ({ ...obj, ...{ ...getColor('bool') } })),
             ...sep(HideBlockType.bool),
             {
                 blockType: BlockType.LABEL,
@@ -1755,74 +2211,75 @@
                 }),
                 hideFromPalette: HideBlockType.string
             },
-            {
-                opcode: 'text',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TEXT',
-                    default: 'text [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        })
-                    }
-                },
-                hideFromPalette: HideBlockType.string
-            },
-            {
-                opcode: 'test',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TEST',
-                    default: 'test [BOOLEAN] true: [STRING1] false: [STRING2]'
-                }),
-                arguments: {
-                    BOOLEAN: {
-                        type: ArgumentType.BOOLEAN
+            ...[
+                {
+                    opcode: 'text',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TEXT',
+                        default: 'text [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            })
+                        }
                     },
-                    STRING1: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'a'
-                    },
-                    STRING2: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'b'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: HideBlockType.string
-            },
-            ...sep(HideBlockType.string),
+                {
+                    opcode: 'test',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TEST',
+                        default: 'test [BOOLEAN] true: [STRING1] false: [STRING2]'
+                    }),
+                    arguments: {
+                        BOOLEAN: {
+                            type: ArgumentType.BOOLEAN
+                        },
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'a'
+                        },
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'b'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.string
+                },
+                ...sep(HideBlockType.string),
 
-            {
-                opcode: 'repeat',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.REPEAT',
-                    default: 'repeat [STRING] [NUMBER] times'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + ' '
+                {
+                    opcode: 'repeat',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REPEAT',
+                        default: 'repeat [STRING] [NUMBER] times'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            }) + ' '
+                        },
+                        NUMBER: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '3'
+                        }
                     },
-                    NUMBER: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '3'
-                    }
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'repeat'}">
                         <value name="STRING">
                             <shadow type="text">
@@ -1836,55 +2293,55 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-            {
-                opcode: 'trim',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TRIM',
-                    default: 'trim whitespace from [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '     ' + formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '     '
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: HideBlockType.string
-            },
 
-            {
-                opcode: 'letters',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.INTERCEPT',
-                    default: 'letters # [START] to [END] of [STRING]'
-                }),
-                arguments: {
-                    START: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '3'
+                {
+                    opcode: 'trim',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TRIM',
+                        default: 'trim whitespace from [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '     ' + formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            }) + '     '
+                        }
                     },
-                    END: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '5'
-                    },
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'abcdefg'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: `
+
+                {
+                    opcode: 'letters',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.INTERCEPT',
+                        default: 'letters # [START] to [END] of [STRING]'
+                    }),
+                    arguments: {
+                        START: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '3'
+                        },
+                        END: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '5'
+                        },
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'abcdefg'
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'letters'}">
                         <value name="START">
                             <shadow type="math_integer">
@@ -1903,36 +2360,36 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-            {
-                opcode: 'remove',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.REMOVE',
-                    default: 'remove # [START] to [END] of [STRING]'
-                }),
-                arguments: {
-                    START: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '3'
-                    },
-                    END: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '5'
-                    },
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'abcdefg'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: `
+
+                {
+                    opcode: 'remove',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REMOVE',
+                        default: 'remove # [START] to [END] of [STRING]'
+                    }),
+                    arguments: {
+                        START: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '3'
+                        },
+                        END: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '5'
+                        },
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'abcdefg'
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'remove'}">
                         <value name="START">
                             <shadow type="math_integer">
@@ -1951,32 +2408,32 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-            {
-                opcode: 'removeChar',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.REMOVE_CHAR',
-                    default: 'remove # [INDEX] of [STRING]'
-                }),
-                arguments: {
-                    INDEX: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    },
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'abc'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: `
+
+                {
+                    opcode: 'removeChar',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REMOVE_CHAR',
+                        default: 'remove # [INDEX] of [STRING]'
+                    }),
+                    arguments: {
+                        INDEX: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '2'
+                        },
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'abc'
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'removeChar'}">
                         <value name="INDEX">
                             <shadow type="math_integer">
@@ -1990,36 +2447,36 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-            {
-                opcode: 'insert',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.INSERT',
-                    default: 'insert [INSERT_STR] at [INDEX] of [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'ac'
-                    },
-                    INSERT_STR: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'b'
-                    },
-                    INDEX: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    },
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: `
+
+                {
+                    opcode: 'insert',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.INSERT',
+                        default: 'insert [INSERT_STR] at [INDEX] of [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'ac'
+                        },
+                        INSERT_STR: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'b'
+                        },
+                        INDEX: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '2'
+                        },
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'insert'}">
                         <value name="STRING">
                             <shadow type="text">
@@ -2038,64 +2495,64 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-            {
-                opcode: 'replace_ci',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.REPLACE',
-                    default: 'replace [STRING2] with [STRING3] in [STRING1]'
-                }),
-                arguments: {
-                    STRING2: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'world'
-                    },
-                    STRING3: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'Scratch'
-                    },
-                    STRING1: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'Hello world!'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: HideBlockType.string
-            },
 
-            {
-                opcode: 'replaceIndex',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.REPLACE_INDEX',
-                    default: 'replace [STRING] from [START] to [END] with [REPLACEMENT]'
-                }),
-                arguments: {
-                    START: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '7'
+                {
+                    opcode: 'replace_ci',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REPLACE',
+                        default: 'replace [STRING2] with [STRING3] in [STRING1]'
+                    }),
+                    arguments: {
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'world'
+                        },
+                        STRING3: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Scratch'
+                        },
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello world!'
+                        }
                     },
-                    END: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '11'
-                    },
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'Hello world!'
-                    },
-                    REPLACEMENT: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'Scratch'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: `
+
+                {
+                    opcode: 'replaceIndex',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REPLACE_INDEX',
+                        default: 'replace [STRING] from [START] to [END] with [REPLACEMENT]'
+                    }),
+                    arguments: {
+                        START: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '7'
+                        },
+                        END: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '11'
+                        },
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello world!'
+                        },
+                        REPLACEMENT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Scratch'
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'replaceIndex'}">
                         <value name="START">
                             <shadow type="math_integer">
@@ -2119,37 +2576,37 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-
-            {
-                opcode: 'replaceIndexChar',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.REPLACE_INDEX_CHAR',
-                    default: 'replace [STRING] at # [INDEX] with [REPLACEMENT]'
-                }),
-                arguments: {
-                    INDEX: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '12'
-                    },
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'Hello world!'
-                    },
-                    REPLACEMENT: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '?'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: `
+
+
+                {
+                    opcode: 'replaceIndexChar',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REPLACE_INDEX_CHAR',
+                        default: 'replace [STRING] at # [INDEX] with [REPLACEMENT]'
+                    }),
+                    arguments: {
+                        INDEX: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '12'
+                        },
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello world!'
+                        },
+                        REPLACEMENT: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '?'
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'replaceIndexChar'}">
                         <value name="INDEX">
                             <shadow type="math_integer">
@@ -2168,56 +2625,57 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.string
-            },
-
-            {
-                opcode: 'split',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT',
-                    default: 'split [STRING] by [SYMBOL], get # [NUM]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_BANANA',
-                            default: 'banana'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_PEACH',
-                            default: 'peach'
-                        })
-                    },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '/'
-                    },
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: (() => {
-                    const argStr = formatMessage({
-                        id: 'OPERATION.ARG_APPLE',
-                        default: 'apple'
-                    }) + '/' + formatMessage({
-                        id: 'OPERATION.ARG_BANANA',
-                        default: 'banana'
-                    }) + '/' + formatMessage({
-                        id: 'OPERATION.ARG_PEACH',
-                        default: 'peach'
-                    });
-                    return `
+
+                ...[
+                    {
+                        opcode: 'split',
+                        blockType: BlockType.REPORTER,
+                        text: formatMessage({
+                            id: 'OPERATION.SPLIT',
+                            default: 'split [STRING] by [SYMBOL], get # [NUM]'
+                        }),
+                        arguments: {
+                            STRING: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_APPLE',
+                                    default: 'apple'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_BANANA',
+                                    default: 'banana'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_PEACH',
+                                    default: 'peach'
+                                })
+                            },
+                            SYMBOL: {
+                                type: ArgumentType.STRING,
+                                defaultValue: '/'
+                            },
+                            NUM: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '2'
+                            }
+                        },
+                        hideFromPalette: true
+                    },
+                    {
+                        // 这个是为了做出整数输入框 (math_integer)
+                        blockType: BlockType.XML,
+                        xml: (() => {
+                            const argStr = formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            }) + '/' + formatMessage({
+                                id: 'OPERATION.ARG_BANANA',
+                                default: 'banana'
+                            }) + '/' + formatMessage({
+                                id: 'OPERATION.ARG_PEACH',
+                                default: 'peach'
+                            });
+                            return `
                         <block type="${'OPERATION_' + 'split'}">
                             <value name="STRING">
                                 <shadow type="text">
@@ -2236,259 +2694,270 @@
                             </value>
                         </block>
                     `;
-                })(),
-                hideFromPalette: HideBlockType.string || !HideBlockType.split
-            },
+                        })(),
+                        hideFromPalette: HideBlockType.string || !HideBlockType.split
+                    },
 
-            {
-                opcode: 'splitAndRemove',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT_REMOVE',
-                    default: 'split [STRING] by [SYMBOL], remove # [NUM]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_BANANA',
-                            default: 'banana'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_PEACH',
-                            default: 'peach'
-                        })
+                    {
+                        opcode: 'splitAndRemove',
+                        blockType: BlockType.REPORTER,
+                        text: formatMessage({
+                            id: 'OPERATION.SPLIT_REMOVE',
+                            default: 'split [STRING] by [SYMBOL], remove # [NUM]'
+                        }),
+                        arguments: {
+                            STRING: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_APPLE',
+                                    default: 'apple'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_BANANA',
+                                    default: 'banana'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_PEACH',
+                                    default: 'peach'
+                                })
+                            },
+                            SYMBOL: {
+                                type: ArgumentType.STRING,
+                                defaultValue: '/'
+                            },
+                            NUM: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '2'
+                            }
+                        },
+                        hideFromPalette: true
                     },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '/'
+                    {
+                        opcode: 'splitAndInsert',
+                        blockType: BlockType.REPORTER,
+                        text: formatMessage({
+                            id: 'OPERATION.SPLIT_INSERT',
+                            default: 'split [STRING] by [SYMBOL], insert # [INDEX] of [INSERT_STR]'
+                        }),
+                        arguments: {
+                            STRING: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_APPLE',
+                                    default: 'apple'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_BANANA',
+                                    default: 'banana'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_PEACH',
+                                    default: 'peach'
+                                })
+                            },
+                            SYMBOL: {
+                                type: ArgumentType.STRING,
+                                defaultValue: '/'
+                            },
+                            INSERT_STR: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_MANGO',
+                                    default: 'mango'
+                                })
+                            },
+                            INDEX: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '2'
+                            }
+                        },
+                        hideFromPalette: true
                     },
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    }
+                    {
+                        opcode: 'splitAndReplace',
+                        blockType: BlockType.REPORTER,
+                        text: formatMessage({
+                            id: 'OPERATION.SPLIT_REPLACE',
+                            default: 'split [STRING] by [SYMBOL], replace # [INDEX] to [REPLACE_STR]'
+                        }),
+                        arguments: {
+                            STRING: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_APPLE',
+                                    default: 'apple'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_BANANA',
+                                    default: 'banana'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_PEACH',
+                                    default: 'peach'
+                                })
+                            },
+                            SYMBOL: {
+                                type: ArgumentType.STRING,
+                                defaultValue: '/'
+                            },
+                            REPLACE_STR: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_MANGO',
+                                    default: 'mango'
+                                })
+                            },
+                            INDEX: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '2'
+                            }
+                        },
+                        hideFromPalette: true
+                    },
+                    {
+                        opcode: 'splitByCount',
+                        blockType: BlockType.REPORTER,
+                        text: formatMessage({
+                            id: 'OPERATION.SPLIT_BY_COUNT',
+                            default: 'split [STRING] by every [COUNT] character, get # [NUM]'
+                        }),
+                        arguments: {
+                            STRING: {
+                                type: ArgumentType.STRING,
+                                defaultValue: formatMessage({
+                                    id: 'OPERATION.ARG_APPLE',
+                                    default: 'apple'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_BANANA',
+                                    default: 'banana'
+                                }) + '/' + formatMessage({
+                                    id: 'OPERATION.ARG_PEACH',
+                                    default: 'peach'
+                                })
+                            },
+                            COUNT: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '3'
+                            },
+                            NUM: {
+                                type: ArgumentType.NUMBER,
+                                defaultValue: '2'
+                            }
+                        },
+                        hideFromPalette: true
+                    },
+                ].map(obj => ({ ...obj, ...{ ...getColor('split') } })),
+                {
+                    opcode: 'toggleCase_ci',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TOGGLE_CASE',
+                        default: '[MODE] of [STRING2] in [STRING1]'
+                    }),
+                    arguments: {
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'TOGGLE_CASE_MODE'
+                        },
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'te'
+                        },
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'The text test'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                opcode: 'splitAndInsert',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT_INSERT',
-                    default: 'split [STRING] by [SYMBOL], insert # [INDEX] of [INSERT_STR]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_BANANA',
-                            default: 'banana'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_PEACH',
-                            default: 'peach'
-                        })
+                {
+                    opcode: 'convert',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CONVERT',
+                        default: 'convert [STRING] to [MODE]'
+                    }),
+                    arguments: {
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'CONVERT_MODE'
+                        },
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'apple banana'
+                        }
                     },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '/'
-                    },
-                    INSERT_STR: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_MANGO',
-                            default: 'mango'
-                        })
-                    },
-                    INDEX: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    }
+                    hideFromPalette: HideBlockType.string
                 },
-                hideFromPalette: true
-            },
-            {
-                opcode: 'splitAndReplace',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT_REPLACE',
-                    default: 'split [STRING] by [SYMBOL], replace # [INDEX] to [REPLACE_STR]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_BANANA',
-                            default: 'banana'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_PEACH',
-                            default: 'peach'
-                        })
+                ...sep(HideBlockType.string),
+                {
+                    opcode: 'join',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'OPERATION.JOIN',
+                        default: 'join [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            }) + ' '
+                        }
                     },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '/'
-                    },
-                    REPLACE_STR: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_MANGO',
-                            default: 'mango'
-                        })
-                    },
-                    INDEX: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    }
+                    hideFromPalette: rareHideAndSow('string')
                 },
-                hideFromPalette: true
-            },
-            {
-                opcode: 'splitByCount',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT_BY_COUNT',
-                    default: 'split [STRING] by every [COUNT] character, get # [NUM]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_BANANA',
-                            default: 'banana'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_PEACH',
-                            default: 'peach'
-                        })
-                    },
-                    COUNT: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '3'
-                    },
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    }
+                {
+                    opcode: 'getJoin',
+                    blockType: BlockType.REPORTER,
+                    disableMonitor: true,
+                    text: formatMessage({
+                        id: 'OPERATION.GET_JOIN',
+                        default: 'join value'
+                    }),
+                    hideFromPalette: rareHideAndSow('string')
                 },
-                hideFromPalette: true
-            },
-            {
-                opcode: 'toggleCase_ci',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TOGGLE_CASE',
-                    default: '[MODE] of [STRING2] in [STRING1]'
-                }),
-                arguments: {
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'TOGGLE_CASE_MODE'
+                {
+                    opcode: 'infJoin',
+                    disableMonitor: true,
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.INF_JOIN',
+                        default: 'join'
+                    }),
+                    hideFromPalette: HideBlockType.string
+                },
+                ...sep(rareHideAndSow('string')),
+                {
+                    opcode: 'getUnicode',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.GET_TO_UNICODE',
+                        default: 'unicode of [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'a'
+                        }
                     },
-                    STRING2: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'te'
-                    },
-                    STRING1: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'The text test'
-                    }
+                    hideFromPalette: rareHideAndSow('string')
                 },
-                hideFromPalette: HideBlockType.string
-            },
-            {
-                opcode: 'convert',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CONVERT',
-                    default: 'convert [STRING] to [MODE]'
-                }),
-                arguments: {
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'CONVERT_MODE'
-                    },
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'apple banana'
-                    }
-                },
-                hideFromPalette: HideBlockType.string
-            },
-            ...sep(HideBlockType.string),
-            {
-                opcode: 'join',
-                blockType: BlockType.COMMAND,
-                text: formatMessage({
-                    id: 'OPERATION.JOIN',
-                    default: 'join [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + ' '
-                    }
-                },
-                hideFromPalette: HideBlockType.string
-            },
-            {
-                opcode: 'getJoin',
-                blockType: BlockType.REPORTER,
-                disableMonitor: true,
-                text: formatMessage({
-                    id: 'OPERATION.GET_JOIN',
-                    default: 'join value'
-                }),
-                hideFromPalette: HideBlockType.string
-            },
-            ...sep(rareHideAndSow('string')),
-            {
-                opcode: 'getUnicode',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.GET_TO_UNICODE',
-                    default: 'unicode of [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'a'
-                    }
-                },
-                hideFromPalette: rareHideAndSow('string')
-            },
 
-            {
-                opcode: 'unicodeToString',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.UNICODE_TO_STRING',
-                    default: 'character with Unicode [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '97'
-                    }
+                {
+                    opcode: 'unicodeToString',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.UNICODE_TO_STRING',
+                        default: 'character with Unicode [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '97'
+                        }
+                    },
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'unicodeToString'}">
                         <value name="STRING">
                             <shadow type="math_whole_number">
@@ -2497,83 +2966,83 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: rareHideAndSow('string')
-            },
-            ...sep(rareHideAndSow('string')),
-            {
-                opcode: 'shuffleString',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SHUFFLE',
-                    default: 'shuffle [STRING]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        })
-                    }
+                    hideFromPalette: rareHideAndSow('string')
                 },
-                hideFromPalette: rareHideAndSow('string')
-            },
-            ...sep(rareHideAndSow('string')),
-            {
-                opcode: 'overwrite',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.OVERWRITE',
-                    default: 'overlay [ORIGINAL] with [OTHER], direction: [DIRECTION]'
-                }),
-                arguments: {
-                    ORIGINAL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '1234567890'
+                ...sep(rareHideAndSow('string')),
+                {
+                    opcode: 'shuffleString',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.SHUFFLE',
+                        default: 'shuffle [STRING]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            })
+                        }
                     },
-                    OTHER: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'abcde'
-                    },
-                    DIRECTION: {
-                        type: ArgumentType.STRING,
-                        menu: 'OVERWRITE_DIRECTION'
-                    }
+                    hideFromPalette: rareHideAndSow('string')
                 },
-                hideFromPalette: rareHideAndSow('string')
-            },
+                ...sep(rareHideAndSow('string')),
+                {
+                    opcode: 'overwrite',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.OVERWRITE',
+                        default: 'overlay [ORIGINAL] with [OTHER], direction: [DIRECTION]'
+                    }),
+                    arguments: {
+                        ORIGINAL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '1234567890'
+                        },
+                        OTHER: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'abcde'
+                        },
+                        DIRECTION: {
+                            type: ArgumentType.STRING,
+                            menu: 'OVERWRITE_DIRECTION'
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('string')
+                },
 
-            {
-                opcode: 'padString',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.PAD_STRING',
-                    default: 'pad [ORIGINAL_STR] to [REQUIRED_LENGTH] with [CHAR_TO_ADD] at [POSITION]'
-                }),
-                arguments: {
-                    ORIGINAL_STR: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '123'
+                {
+                    opcode: 'padString',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.PAD_STRING',
+                        default: 'pad [ORIGINAL_STR] to [REQUIRED_LENGTH] with [CHAR_TO_ADD] at [POSITION]'
+                    }),
+                    arguments: {
+                        ORIGINAL_STR: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '123'
+                        },
+                        REQUIRED_LENGTH: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 5
+                        },
+                        CHAR_TO_ADD: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '0'
+                        },
+                        POSITION: {
+                            type: ArgumentType.STRING,
+                            menu: 'POSITION'
+                        }
                     },
-                    REQUIRED_LENGTH: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: 5
-                    },
-                    CHAR_TO_ADD: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '0'
-                    },
-                    POSITION: {
-                        type: ArgumentType.STRING,
-                        menu: 'POSITION'
-                    }
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'padString'}">
                         <value name="ORIGINAL_STR">
                             <shadow type="text">
@@ -2592,8 +3061,11 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: rareHideAndSow('string')
-            },
+                    hideFromPalette: rareHideAndSow('string')
+                }
+            ].map(obj => (
+                obj.color1 ? obj : { ...obj, ...{ ...getColor('string') } }
+            )),
 
             ...sep(HideBlockType.string),
             {
@@ -2604,21 +3076,22 @@
                 }),
                 hideFromPalette: HideBlockType.split
             },
-            {
-                // 这个是为了做出整数输入框 (math_integer)
-                blockType: BlockType.XML,
-                xml: (() => {
-                    const argStr = formatMessage({
-                        id: 'OPERATION.ARG_APPLE',
-                        default: 'apple'
-                    }) + '/' + formatMessage({
-                        id: 'OPERATION.ARG_BANANA',
-                        default: 'banana'
-                    }) + '/' + formatMessage({
-                        id: 'OPERATION.ARG_PEACH',
-                        default: 'peach'
-                    });
-                    return `
+            ...[
+                {
+                    // 这个是为了做出整数输入框 (math_integer)
+                    blockType: BlockType.XML,
+                    xml: (() => {
+                        const argStr = formatMessage({
+                            id: 'OPERATION.ARG_APPLE',
+                            default: 'apple'
+                        }) + '/' + formatMessage({
+                            id: 'OPERATION.ARG_BANANA',
+                            default: 'banana'
+                        }) + '/' + formatMessage({
+                            id: 'OPERATION.ARG_PEACH',
+                            default: 'peach'
+                        });
+                        return `
                         <block type="${'OPERATION_' + 'split'}">
                             <value name="STRING">
                                 <shadow type="text">
@@ -2719,60 +3192,61 @@
                             </value>
                         </block>
                     `;
-                })(),
-                hideFromPalette: HideBlockType.split
-            },
-            {
-                opcode: 'splitAndShuffle',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT_SHUFFLE',
-                    default: 'split [STRING] by [SYMBOL], and shuffle'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: formatMessage({
-                            id: 'OPERATION.ARG_APPLE',
-                            default: 'apple'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_BANANA',
-                            default: 'banana'
-                        }) + '/' + formatMessage({
-                            id: 'OPERATION.ARG_PEACH',
-                            default: 'peach'
-                        })
-                    },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '/'
-                    }
+                    })(),
+                    hideFromPalette: HideBlockType.split
                 },
-                hideFromPalette: HideBlockType.split
-            },
-            {
-                opcode: 'splitAndAnalysis',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.SPLIT_ANALYSIS',
-                    default: 'split [STRING] by [SYMBOL], and get [MODE]'
-                }),
-                arguments: {
-                    STRING: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '1, 2, 3, 4, 5'
+                {
+                    opcode: 'splitAndShuffle',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.SPLIT_SHUFFLE',
+                        default: 'split [STRING] by [SYMBOL], and shuffle'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            }) + '/' + formatMessage({
+                                id: 'OPERATION.ARG_BANANA',
+                                default: 'banana'
+                            }) + '/' + formatMessage({
+                                id: 'OPERATION.ARG_PEACH',
+                                default: 'peach'
+                            })
+                        },
+                        SYMBOL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '/'
+                        }
                     },
-                    SYMBOL: {
-                        type: ArgumentType.STRING,
-                        defaultValue: ','
-                    },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'SPLIT_ANALYSIS_MODE'
-                    }
+                    hideFromPalette: HideBlockType.split
                 },
-                hideFromPalette: HideBlockType.split
-            },
+                {
+                    opcode: 'splitAndAnalysis',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.SPLIT_ANALYSIS',
+                        default: 'split [STRING] by [SYMBOL], and get [MODE]'
+                    }),
+                    arguments: {
+                        STRING: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '1, 2, 3, 4, 5'
+                        },
+                        SYMBOL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ','
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'SPLIT_ANALYSIS_MODE'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.split
+                },
+            ].map(obj => ({ ...obj, ...{ ...getColor('split') } })),
             ...sep(HideBlockType.split),
             {
                 blockType: BlockType.LABEL,
@@ -2782,225 +3256,226 @@
                 }),
                 hideFromPalette: HideBlockType.graph
             },
-            {
-                opcode: 'calculateLineLength',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE_LINE_LENGTH',
-                    default: 'length from ([X1],[Y1]) to ([X2],[Y2])'
-                }),
-                arguments: {
-                    X1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
+            ...[
+                {
+                    opcode: 'calculateLineLength',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE_LINE_LENGTH',
+                        default: 'length from ([X1],[Y1]) to ([X2],[Y2])'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        }
                     },
-                    Y1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    Y2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            {
-                opcode: 'calculateLineDirection',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE_LINE_DIRECTION',
-                    default: 'direction from ([X1],[Y1]) to ([X2],[Y2])'
-                }),
-                arguments: {
-                    X1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
+                {
+                    opcode: 'calculateLineDirection',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE_LINE_DIRECTION',
+                        default: 'direction from ([X1],[Y1]) to ([X2],[Y2])'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        }
                     },
-                    Y1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    Y2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            {
-                opcode: 'calculateMidpoint',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE_MIDPOINT',
-                    default: 'midpoint of ([X1],[Y1]) and ([X2],[Y2])'
-                }),
-                arguments: {
-                    X1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
+                {
+                    opcode: 'calculateMidpoint',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE_MIDPOINT',
+                        default: 'midpoint of ([X1],[Y1]) and ([X2],[Y2])'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        }
                     },
-                    Y1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    Y2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            {
-                opcode: 'calculateSlope',
-                blockType: Scratch.BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE_SLOPE',
-                    default: 'slope between ([X1], [Y1]) and ([X2], [Y2])'
-                }),
-                arguments: {
-                    X1: {
-                        type: Scratch.ArgumentType.NUMBER,
-                        defaultValue: '0'
+                {
+                    opcode: 'calculateSlope',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE_SLOPE',
+                        default: 'slope between ([X1], [Y1]) and ([X2], [Y2])'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y1: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X2: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        Y2: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        }
                     },
-                    Y1: {
-                        type: Scratch.ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X2: {
-                        type: Scratch.ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    Y2: {
-                        type: Scratch.ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            {
-                opcode: 'calculateIntersection',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE_INTERSECTION',
-                    default: 'calculate intersection ([X1],[Y1]) to ([X2],[Y2]) & ([X3],[Y3]) to ([X4],[Y4])'
-                }),
-                arguments: {
-                    X1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '-100'
+                {
+                    opcode: 'calculateIntersection',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE_INTERSECTION',
+                        default: 'calculate intersection ([X1],[Y1]) to ([X2],[Y2]) & ([X3],[Y3]) to ([X4],[Y4])'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '-100'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        X4: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y4: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '-100'
+                        }
                     },
-                    Y1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    Y2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    Y3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '100'
-                    },
-                    X4: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    Y4: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '-100'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            ...sep(HideBlockType.graph),
-            {
-                opcode: 'triangle',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TRIANGLE',
-                    default: 'triangle ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) \'s [MODE]'
-                }),
-                arguments: {
-                    X1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
+                ...sep(HideBlockType.graph),
+                {
+                    opcode: 'triangle',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TRIANGLE',
+                        default: 'triangle ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) \'s [MODE]'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        X3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        Y3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'GRAPH_MODE'
+                        }
                     },
-                    Y1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    X2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    Y2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    X3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    Y3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'GRAPH_MODE'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
 
-            {
-                opcode: 'triangleArea',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TRIANGLE_AREA',
-                    default: 'triangle [S1] [S2] [S3] \'s area'
-                }),
-                arguments: {
-                    S1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '3'
+                {
+                    opcode: 'triangleArea',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TRIANGLE_AREA',
+                        default: 'triangle [S1] [S2] [S3] \'s area'
+                    }),
+                    arguments: {
+                        S1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '3'
+                        },
+                        S2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '4'
+                        },
+                        S3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '5'
+                        }
                     },
-                    S2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '4'
-                    },
-                    S3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '5'
-                    }
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正数输入框 (math_positive_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正数输入框 (math_positive_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'triangleArea'}">
                         <value name="S1">
                             <shadow type="math_positive_number">
@@ -3019,104 +3494,104 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.graph
-            },
+                    hideFromPalette: HideBlockType.graph
+                },
 
-            {
-                opcode: 'rectangle',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.RECTANGLE',
-                    default: 'quadrangle ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) ([X4],[Y4]) \'s [MODE]'
-                }),
-                arguments: {
-                    X1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
+                {
+                    opcode: 'rectangle',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.RECTANGLE',
+                        default: 'quadrangle ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) ([X4],[Y4]) \'s [MODE]'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        X3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        Y3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X4: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y4: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'GRAPH_MODE'
+                        }
                     },
-                    Y1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    X2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    Y2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    X3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    Y3: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    X4: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    Y4: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '0'
-                    },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'GRAPH_MODE'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            {
-                opcode: 'graph',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.GRAPH',
-                    default: 'graph [GRAPH] \'s [MODE]'
-                }),
-                arguments: {
-                    GRAPH: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '(0,0) (0,2) (2,4) (4,2) (4,0)'
+                {
+                    opcode: 'graph',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.GRAPH',
+                        default: 'graph [GRAPH] \'s [MODE]'
+                    }),
+                    arguments: {
+                        GRAPH: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '(0,0) (0,2) (2,4) (4,2) (4,0)'
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'GRAPH_MODE'
+                        }
                     },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'GRAPH_MODE'
-                    }
+                    hideFromPalette: rareHideAndSow('graph')
                 },
-                hideFromPalette: rareHideAndSow('graph')
-            },
-            ...sep(HideBlockType.graph),
+                ...sep(HideBlockType.graph),
 
-            {
-                opcode: 'circle',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CIRCLE',
-                    default: 'circle of [UNITS] [LENGTH] \'s [MODE]'
-                }),
-                arguments: {
-                    UNITS: {
-                        type: ArgumentType.STRING,
-                        menu: 'LENGTH_UNITS'
+                {
+                    opcode: 'circle',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CIRCLE',
+                        default: 'circle of [UNITS] [LENGTH] \'s [MODE]'
+                    }),
+                    arguments: {
+                        UNITS: {
+                            type: ArgumentType.STRING,
+                            menu: 'LENGTH_UNITS'
+                        },
+                        LENGTH: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'GRAPH_MODE'
+                        }
                     },
-                    LENGTH: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'GRAPH_MODE'
-                    }
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正数输入框 (math_positive_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正数输入框 (math_positive_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'circle'}">
                         <value name="LENGTH">
                             <shadow type="math_positive_number">
@@ -3125,60 +3600,61 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.graph
-            },
+                    hideFromPalette: HideBlockType.graph
+                },
 
-            ...sep(HideBlockType.graph),
-            {
-                opcode: 'isAngleInRange',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.IS_ANGLE_IN_RANGE',
-                    default: 'is ∠ [ANGLE1] between ∠ [ANGLE2] and ∠ [ANGLE3] in [MODE]?'
-                }),
-                arguments: {
-                    ANGLE1: {
-                        type: ArgumentType.ANGLE,
-                        defaultValue: 45
+                ...sep(HideBlockType.graph),
+                {
+                    opcode: 'isAngleInRange',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.IS_ANGLE_IN_RANGE',
+                        default: 'is ∠ [ANGLE1] between ∠ [ANGLE2] and ∠ [ANGLE3] in [MODE]?'
+                    }),
+                    arguments: {
+                        ANGLE1: {
+                            type: ArgumentType.ANGLE,
+                            defaultValue: 45
+                        },
+                        ANGLE2: {
+                            type: ArgumentType.ANGLE,
+                            defaultValue: 0
+                        },
+                        ANGLE3: {
+                            type: ArgumentType.ANGLE,
+                            defaultValue: 90
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'ANGLE_MODE'
+                        }
                     },
-                    ANGLE2: {
-                        type: ArgumentType.ANGLE,
-                        defaultValue: 0
-                    },
-                    ANGLE3: {
-                        type: ArgumentType.ANGLE,
-                        defaultValue: 90
-                    },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'ANGLE_MODE'
-                    }
+                    hideFromPalette: HideBlockType.graph
                 },
-                hideFromPalette: HideBlockType.graph
-            },
-            {
-                opcode: 'calculateAngleDifference',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.CALCULATE_ANGLE_DIFFERENCE',
-                    default: 'angle from ∠ [ANGLE1] to ∠ [ANGLE2] in [MODE]'
-                }),
-                arguments: {
-                    ANGLE1: {
-                        type: ArgumentType.ANGLE,
-                        defaultValue: 0
+                {
+                    opcode: 'calculateAngleDifference',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.CALCULATE_ANGLE_DIFFERENCE',
+                        default: 'angle from ∠ [ANGLE1] to ∠ [ANGLE2] in [MODE]'
+                    }),
+                    arguments: {
+                        ANGLE1: {
+                            type: ArgumentType.ANGLE,
+                            defaultValue: 0
+                        },
+                        ANGLE2: {
+                            type: ArgumentType.ANGLE,
+                            defaultValue: 90
+                        },
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'ANGLE_MODE'
+                        }
                     },
-                    ANGLE2: {
-                        type: ArgumentType.ANGLE,
-                        defaultValue: 90
-                    },
-                    MODE: {
-                        type: ArgumentType.STRING,
-                        menu: 'ANGLE_MODE'
-                    }
-                },
-                hideFromPalette: HideBlockType.graph
-            },
+                    hideFromPalette: HideBlockType.graph
+                }
+            ].map(obj => ({ ...obj, ...{ ...getColor('graph') } })),
             ...sep(HideBlockType.graph),
             {
                 blockType: BlockType.LABEL,
@@ -3189,33 +3665,34 @@
                 hideFromPalette: HideBlockType.base
             },
 
-            {
-                opcode: 'base',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.BASE',
-                    default: 'convert [NUM] in base [INTO1] to base [INTO2]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.STRING,
-                        defaultValue: '10'
+            ...[
+                {
+                    opcode: 'base',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.BASE',
+                        default: 'convert [NUM] in base [INTO1] to base [INTO2]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '10'
+                        },
+                        INTO1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        },
+                        INTO2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '2'
+                        }
                     },
-                    INTO1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    },
-                    INTO2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '2'
-                    }
+                    hideFromPalette: true
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'base'}">
                         <value name="NUM">
                             <shadow type="text">
@@ -3234,64 +3711,64 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.base
-            },
-
-            {
-                opcode: 'toBin',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TO_BIN',
-                    default: '[NUM]₁₀ → BIN'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '10'
-                    }
+                    hideFromPalette: HideBlockType.base
                 },
-                hideFromPalette: rareHideAndSow('base')
-            },
-            {
-                opcode: 'toDec',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.TO_DEC',
-                    default: '[NUM]₂ → DEC'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '1010'
-                    }
-                },
-                hideFromPalette: rareHideAndSow('base')
-            },
-            ...sep(HideBlockType.base),
 
-            {
-                opcode: 'isBase',
-                blockType: BlockType.BOOLEAN,
-                text: formatMessage({
-                    id: 'OPERATION.IS_BASE',
-                    default: '[NUM] is base [BASE] ?'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.STRING,
-                        defaultValue: 'FF'
+                {
+                    opcode: 'toBin',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TO_BIN',
+                        default: '[NUM]₁₀ → BIN'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '10'
+                        }
                     },
-                    BASE: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: '16'
-                    }
+                    hideFromPalette: rareHideAndSow('base')
                 },
-                hideFromPalette: true
-            },
-            {
-                // 这个是为了做出正整数输入框 (math_whole_number)
-                blockType: BlockType.XML,
-                xml: `
+                {
+                    opcode: 'toDec',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.TO_DEC',
+                        default: '[NUM]₂ → DEC'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '1010'
+                        }
+                    },
+                    hideFromPalette: rareHideAndSow('base')
+                },
+                ...sep(HideBlockType.base),
+
+                {
+                    opcode: 'isBase',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.IS_BASE',
+                        default: '[NUM] is base [BASE] ?'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'FF'
+                        },
+                        BASE: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '16'
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
+                    // 这个是为了做出正整数输入框 (math_whole_number)
+                    blockType: BlockType.XML,
+                    xml: `
                     <block type="${'OPERATION_' + 'isBase'}">
                         <value name="NUM">
                             <shadow type="text">
@@ -3305,72 +3782,73 @@
                         </value>
                     </block>
                 `,
-                hideFromPalette: HideBlockType.base
-            },
+                    hideFromPalette: HideBlockType.base
+                },
 
-            ...sep(HideBlockType.base),
-            {
-                opcode: 'booleanToNumber',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.BOOLEAN_TO_NUMBER',
-                    default: 'converts [BOOLEAN] to binary num'
-                }),
-                arguments: {
-                    BOOLEAN: {
-                        type: ArgumentType.BOOLEAN,
-                    }
-                },
-                hideFromPalette: HideBlockType.base
-            },
-            {
-                opcode: 'numberNot',
-                blockType: BlockType.REPORTER,
-                text: formatMessage({
-                    id: 'OPERATION.NUMBER_NOT',
-                    default: 'binary Inversion [NUM]'
-                }),
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
-                },
-                hideFromPalette: HideBlockType.base
-            },
-            ...sep(HideBlockType.base),
-            {
-                opcode: 'bitwiseBlock',
-                blockType: BlockType.REPORTER,
-                text: '[NUM1] [SYMBOL] [NUM2]',
-                arguments: {
-                    NUM1: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+                ...sep(HideBlockType.base),
+                {
+                    opcode: 'booleanToNumber',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.BOOLEAN_TO_NUMBER',
+                        default: 'converts [BOOLEAN] to binary num'
+                    }),
+                    arguments: {
+                        BOOLEAN: {
+                            type: ArgumentType.BOOLEAN,
+                        }
                     },
-                    NUM2: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
+                    hideFromPalette: HideBlockType.base
+                },
+                {
+                    opcode: 'numberNot',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.NUMBER_NOT',
+                        default: 'binary Inversion [NUM]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
                     },
-                    SYMBOL: {
-                        type: ArgumentType.NUMBER,
-                        menu: 'BITWISE_SYMBOL'
-                    }
+                    hideFromPalette: HideBlockType.base
                 },
-                hideFromPalette: HideBlockType.base
-            },
-            {
-                opcode: 'bitwiseNot',
-                blockType: BlockType.REPORTER,
-                text: '~ [NUM]',
-                arguments: {
-                    NUM: {
-                        type: ArgumentType.NUMBER,
-                        defaultValue: ''
-                    }
+                ...sep(HideBlockType.base),
+                {
+                    opcode: 'bitwiseBlock',
+                    blockType: BlockType.REPORTER,
+                    text: '[NUM1] [SYMBOL] [NUM2]',
+                    arguments: {
+                        NUM1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        NUM2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        SYMBOL: {
+                            type: ArgumentType.NUMBER,
+                            menu: 'BITWISE_SYMBOL'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.base
                 },
-                hideFromPalette: HideBlockType.base
-            },
+                {
+                    opcode: 'bitwiseNot',
+                    blockType: BlockType.REPORTER,
+                    text: '~ [NUM]',
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        }
+                    },
+                    hideFromPalette: HideBlockType.base
+                },
+            ].map(obj => ({ ...obj, ...{ ...getColor('base') } })),
             ...sep(false),
             {
                 blockType: BlockType.LABEL,
@@ -3487,6 +3965,7 @@
 
             ...sep(HideBlockType.miscellaneous),
             {
+                ...getColor('bool'),
                 opcode: 'equalForOptions',
                 blockType: BlockType.BOOLEAN,
                 text: '[OPERAND1] = [OPERAND2]',
@@ -3499,6 +3978,7 @@
                 hideFromPalette: true
             },
             {
+                ...getColor('bool'),
                 opcode: 'equalOptions',
                 blockType: BlockType.REPORTER,
                 text: formatMessage({
@@ -3577,6 +4057,27 @@
                 hideFromPalette: HideBlockType.bool || HideBlockType.letterCase || HideBlockType.miscellaneous
             },
             {
+                ...getColor('bool'),
+                opcode: 'containOptions_cs',
+                blockType: BlockType.BOOLEAN,
+                text: '[ICON]' + formatMessage({
+                    id: 'OPERATION.CONTAIN_OPTIONS',
+                    default: 'is [OPERAND] in'
+                }),
+                arguments: {
+                    ICON: {
+                        type: ArgumentType.IMAGE,
+                        dataURI: AaIcon
+                    },
+                    OPERAND: {
+                        type: ArgumentType.STRING,
+                        defalutValue: ''
+                    }
+                },
+                hideFromPalette: HideBlockType.bool || HideBlockType.letterCase || HideBlockType.miscellaneous
+            },
+            {
+                ...getColor('string'),
                 opcode: 'replace',
                 blockType: BlockType.REPORTER,
                 text: '[ICON]' + formatMessage({
@@ -3604,6 +4105,7 @@
                 hideFromPalette: HideBlockType.string || HideBlockType.letterCase || HideBlockType.miscellaneous
             },
             {
+                ...getColor('string'),
                 opcode: 'toggleCase',
                 blockType: BlockType.REPORTER,
                 text: '[ICON]' + formatMessage({
@@ -3632,8 +4134,8 @@
             },
 
             ...sep(HideBlockType.miscellaneous),
-            ...allCompare(rareHideAndSow('miscellaneous')),
-            ...allBitwise(expandMenuHideAndSow('base') || HideBlockType.miscellaneous, isRTL)
+            ...allCompare(rareHideAndSow('miscellaneous')).map(obj => ({ ...obj, ...{ ...getColor('bool') } })),
+            ...allBitwise(expandMenuHideAndSow('base') || HideBlockType.miscellaneous, isRTL).map(obj => ({ ...obj, ...{ ...getColor('base') } }))
         ];
     };
 
@@ -4125,6 +4627,46 @@
             return getInfo();
         }
 
+        constructor(runtime) {
+            this.runtime = runtime ?? Scratch?.vm?.runtime
+
+            if (!this.runtime) {
+                return
+            }
+
+            setExpandableBlocks({
+                'OPERATION_infJoin': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: formatMessage({
+                        id: 'OPERATION.INF_JOIN_SEPARATOR',
+                        default: ''
+                    }),
+                    defaultItemCount: 2
+                },
+                'OPERATION_containOptions_ci': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: formatMessage({
+                        id: 'OPERATION.CONTAIN_OPTIONS_SEPARATOR',
+                        default: ' , '
+                    }),
+                    defaultItemCount: 1
+                },
+                'OPERATION_containOptions_cs': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: formatMessage({
+                        id: 'OPERATION.CONTAIN_OPTIONS_SEPARATOR',
+                        default: ' , '
+                    }),
+                    defaultItemCount: 1
+                },
+                'OPERATION_find': {
+                    type: INPUT_TYPES.STRING,
+                    separatorText: '',
+                    defaultItemCount: 2
+                }
+            }, this.runtime)
+        }
+
         openSettingWindow() {
             showWindow();
         }
@@ -4173,6 +4715,22 @@
             START2 = Cast.toNumber(START2);
             END2 = Cast.toNumber(END2);
             return ((NUM - START1) / (END1 - START1)) * (END2 - START2) + START2;
+        }
+
+        find(args) {
+            const numberArr = Object.keys(args)
+                .filter(key => key.startsWith('ADD'))
+                .map(key => args[key]);
+
+            switch (args.MODE) {
+                case 'max': return Math.max(...numberArr);
+                case 'min': return Math.min(...numberArr);
+                case 'mean': {
+                    const sum = numberArr.reduce((acc, curr) => acc + Number(curr), 0);
+                    return sum / numberArr.length;
+                }
+                case 'sum': return numberArr.reduce((acc, curr) => acc + Number(curr), 0);
+            }
         }
 
         atan2Block({ NUM1, NUM2 }) {
@@ -4472,6 +5030,21 @@
             }
         }
 
+        containOptions_ci(args) {
+            let options = [];
+            let operand = String(args.OPERAND).toLowerCase();
+            for (let key in args) {
+                if (key !== 'OPERAND') {
+                    if (args.hasOwnProperty(key)) {
+                        options.push(
+                            String(args[key]).toLowerCase()
+                        );
+                    }
+                }
+            }
+            return options.includes(operand);
+        }
+
         _compare(arg1, arg2, symbol) {
             if (symbol === 'equal') return Cast.compare(arg1, arg2) === 0;
             if (symbol === 'strictlyEqual') return String(arg1) === String(arg2);
@@ -4532,6 +5105,21 @@
                 return Cast.toString(string);
             };
             return format(args.STRING1).includes(format(args.STRING2));
+        }
+
+        containOptions_cs(args) {
+            let options = [];
+            let operand = String(args.OPERAND);
+            for (let key in args) {
+                if (key !== 'OPERAND') {
+                    if (args.hasOwnProperty(key)) {
+                        options.push(
+                            String(args[key])
+                        );
+                    }
+                }
+            }
+            return options.includes(operand);
         }
 
         trueBlock = () => true;
@@ -4856,6 +5444,16 @@
                 return thread.joinValue.value ?? '';
             }
             return '';
+        }
+
+        infJoin(args) {
+            let r = '';
+            for (let key in args) {
+                if (args.hasOwnProperty(key)) {
+                    r += String(args[key]);
+                }
+            }
+            return r;
         }
 
         getUnicode({ STRING }) {
@@ -5366,7 +5964,6 @@
         }
 
         equalOptions({ OPERAND1, OPERAND2 }, util) {
-            console.log(util);
             const operand1 = String(OPERAND1).toLowerCase();
             const operand2 = String(OPERAND2).toLowerCase();
             const { thread } = util;
