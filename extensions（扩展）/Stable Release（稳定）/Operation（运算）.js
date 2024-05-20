@@ -877,18 +877,26 @@
             return result;
         };
         const getScratch = (runtime) => {
-            function getEvent(e) {
-                return e instanceof Array ? e[e.length - 1] : e;
+            try {
+                function getEvent(e) {
+                    return e instanceof Array ? e[e.length - 1] : e;
+                }
+                const vm = hijack(
+                    getEvent(runtime._events['QUESTION'])
+                ).props.vm;
+                return {
+                    scratchBlocks: hijack(
+                        getEvent(vm._events['EXTENSION_ADDED'])
+                    )?.ScratchBlocks,
+                    vm
+                };
             }
-            const vm = hijack(
-                getEvent(runtime._events['QUESTION'])
-            ).props.vm;
-            return {
-                scratchBlocks: hijack(
-                    getEvent(vm._events['EXTENSION_ADDED'])
-                )?.ScratchBlocks,
-                vm
-            };
+            catch (e) {
+                return {
+                    scratchBlocks: null,
+                    vm: null
+                }
+            }
         }
 
         // 创建按钮
