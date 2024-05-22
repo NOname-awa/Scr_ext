@@ -1,17 +1,14 @@
-// 放弃了，不搞了，重写了
-
-
 ((Scratch) => {
     'use strict';
 
-    const version = '0.2.3-β';
+    const version = '0.3';
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
     Scratch.translate.setup({
         "zh": {
             "debugger.extName": "调试器",
-            "debugger.windowText": "控制台",
+            "debugger.windowText": "调试控制台",
             "debugger.console": "控制台",
             "debugger.inputTip": "输入：",
             "debugger.showConsole": "打开控制台",
@@ -37,12 +34,12 @@
             "debugger.logStage": "记录舞台图片",
             "debugger.whenInput": "当输入",
             "debugger.getLastInput": "最后一次输入",
-            "debugger.tipForHelp": "输入 \"ext -help\" 获取帮助。",
+            "debugger.tipForHelp": "输入 \"ext -?\" 获取帮助。",
             "help": "帮助：<br><br>　　断点：暂停程序进行调试，要继续执行请按下「继续」键。<br>　　控制台：一个可以进行输入输入与输出的窗口。<br>　　输出：可以在关键点打印文字或变量来调试程序的运行。<br>　　输入：点击上面的「>」按钮进行输入，<br>　　　　　输入可以被「当输入」与「最后一次输入」检测到。"
         },
         "zh-tw": {
             "debugger.extName": "偵錯器",
-            "debugger.windowText": "主控台",
+            "debugger.windowText": "偵錯主控台",
             "debugger.console": "主控台",
             "debugger.inputTip": "輸入：",
             "debugger.showConsole": "開放主控台",
@@ -68,12 +65,12 @@
             "debugger.logStage": "記錄舞台圖像",
             "debugger.whenInput": "當輸入",
             "debugger.getLastInput": "最後一次輸入",
-            "debugger.tipForHelp": "輸入 \"ext -help\" 察看幫助。",
+            "debugger.tipForHelp": "輸入 \"ext -?\" 察看幫助。",
             "help": "幫助：<br><br>　　中斷點：暫停程式進行調試，要繼續執行請按下「繼續」鍵。<br>　　主控台：一個可以進行輸入輸出的視窗。<br>　　輸出：可以在關鍵點列印文字或變數來調試程式的運行。<br>　　輸入：點擊上面的「>」按鈕進行輸入，<br>　　　　　輸入可以被「當輸入」與「最後一次輸入」檢測到。"
         },
         "ja": {
             "debugger.extName": "デバッガー",
-            "debugger.windowText": "コンソール",
+            "debugger.windowText": "デバッグコンソール",
             "debugger.console": "コンソール",
             "debugger.inputTip": "入力：",
             "debugger.showConsole": "コンソールを開く",
@@ -99,7 +96,7 @@
             "debugger.logStage": "ステージ画像を出力する",
             "debugger.whenInput": "入力時",
             "debugger.getLastInput": "最後の入力を取得",
-            "debugger.tipForHelp": "\"ext -help\" を入力してヘルプを表示。",
+            "debugger.tipForHelp": "\"ext -?\" を入力してヘルプを表示。",
             "help": "ヘルプ：<br><br>　　ブレークポイント：プログラムをデバッグするために一時停止します。<br>　　　　　「続行」キーを押して実行を続けてください。<br>　　コンソール：入出力を行うウィンドウです。<br>　　出力：デバッグ中にキーポイントでテキストや変数を印刷します。<br>　　入力：上の「＞」ボタンをクリックして入力します。<br>　　　　　入力は「入力時」と「最後の入力を取得」で検出されます。"
         }
     });
@@ -123,10 +120,10 @@
     const getDarkMode = () => {
         try {
             let theme = JSON.parse(localStorage.getItem('tw:theme'));
-            return theme.gui !== 'light';
+            return theme.gui === 'dark';
         }
         catch (error) {
-            return 'dark';
+            return false;
         }
     };
 
@@ -165,7 +162,7 @@
     titleBar.style.cursor = 'move';
     titleBar.style.fontSize = '14px';
     titleBar.style.fontFamily = 'IconFont, Cascadia Code, Consolas, Courier New, Menlo, 等线, monospace';
-    titleBar.innerText = ' ' + lang('debugger.windowText', 'console');
+    titleBar.innerText = ' ' + lang('debugger.windowText', 'debug console');
     titleBar.style.position = 'sticky';
     titleBar.style.top = '0px';
     consoleWindow.appendChild(titleBar);
@@ -262,15 +259,45 @@
     inputBox.style.outline = 'none';
     inputWindow.appendChild(inputBox);
 
+    let history = [];
+    let historyIndex = -1;
+
     // 提交
     inputBox.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();  // 阻止默认的行为
 
             let messageText = inputBox.value;
+            if (messageText.trim() !== '') {
+                history.push(messageText);  // 添加到历史记录
+                historyIndex = history.length;  // 重置指针
+            }
             inputBox.value = '';
 
             inputCommand(messageText);
+        }
+    });
+
+    // 翻找记录
+    inputBox.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            event.preventDefault();  // 阻止默认的行为
+            if (event.key === 'ArrowUp') {
+                // 向上翻找记录
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    inputBox.value = history[historyIndex];
+                }
+            } else if (event.key === 'ArrowDown') {
+                // 向下翻找记录
+                if (historyIndex < history.length - 1) {
+                    historyIndex++;
+                    inputBox.value = history[historyIndex];
+                } else {
+                    historyIndex = history.length;
+                    inputBox.value = '';
+                }
+            }
         }
     });
 
@@ -297,62 +324,12 @@
                 return;
             }
             case 'ext': {
-                switch (command[1] ?? '') {
-                    case '-help': {
-                        addText({
-                            bullet: ' ',
-                            message: lang(
-                                'help',
-                                'Help:<br><br>   Breakpoint: Pause the program for debugging, press<br>               "Continue" to resume execution.<br>   Console: A window for input and output.<br>   Output: Print text or variables at key points to debug.<br>   Input: Click the ">" button above to input,<br>          input can be detected as<br>          "when input" or "get last input".'
-                            ).replace(/ /g, '&nbsp;') + '<br>&nbsp;',
-                            innerHTML: true
-                        });
-                        return;
-                    }
-                    case '-v': {
-                        addText({ message: `v${version}`, bullet: '' });
-                        return;
-                    }
-                    case '-m': {
-                        maxMessage = Number(command[2] ?? 50);
-                        addText({
-                            bullet: ' ',
-                            message: `maxMessage: ${maxMessage}`
-                        });
-                        return;
-                    }
-                    case '-f': {
-                        consoleWindow.style.fontFamily = `${command[2]}`;
-                        inputBox.style.fontFamily = `     ${command[2]}`;
-                        addText({
-                            bullet: ' ',
-                            message: `font: ${command[2]}`
-                        });
-                        return;
-                    }
-                    case '': {
-                        addText({
-                            bullet: ' ',
-                            message: (
-                                `	argument:
-									-help           Help for extension.
-									-v              Check the extension version.
-									-m <number>     Set max number of historical msgs.
-									-f <font name>  Set console font.
-								`
-                            ).replace(/	/g, '') + '\n'
-                        });
-                        return;
-                    }
-                    default: {
-                        addText({
-                            bullet: ' ',
-                            message: `unkonw argument: ${command[1]}`,
-                            color: '#E06C75'
-                        });
-                        return;
-                    }
-                }
+                Commands.ext(command);
+                return;
+            }
+            case 'pro': {
+                Commands.pro(command);
+                return;
             }
             case 'inp': {
                 let inStr = stripQuotes(command[1] ?? '');
@@ -369,6 +346,130 @@
                 });
                 return;
             }
+        }
+    }
+
+    // 指令集
+    const Commands = {
+        ext: (command) => {
+            switch (command[1] ?? '') {
+                case '-?':
+                case '--help': {
+                    addText({
+                        bullet: ' ',
+                        message: lang(
+                            'help',
+                            'Help:<br><br>   Breakpoint: Pause the program for debugging, press<br>               "Continue" to resume execution.<br>   Console: A window for input and output.<br>   Output: Print text or variables at key points to debug.<br>   Input: Click the ">" button above to input,<br>          input can be detected as<br>          "when input" or "get last input".'
+                        ).replace(/ /g, '&nbsp;') + '<br>&nbsp;',
+                        innerHTML: true
+                    });
+                    break;
+                }
+                case '-v':
+                case '--version': {
+                    addText({ message: `v${version}`, bullet: '' });
+                    break;
+                }
+                case '-h':
+                case '--history': {
+                    maxMessage = Number(command[2] ?? 50);
+                    addText({
+                        bullet: ' ',
+                        message: `history: ${maxMessage}`
+                    });
+                    break;
+                }
+                case '-f':
+                case '--font': {
+                    consoleWindow.style.fontFamily = `${command[2]}`;
+                    inputBox.style.fontFamily = `     ${command[2]}`;
+                    addText({
+                        bullet: ' ',
+                        message: `font: ${command[2]}`
+                    });
+                    break;
+                }
+                case '': {
+                    addText({
+                        bullet: ' ',
+                        message: (
+                            'ext <option>\r\n' +
+                            'option:\r\n' +
+                            '    [-? | --help]:   . . . . . Help for extension.\r\n' +
+                            '    [-v | --version]:  . . . . Check the extension version.\r\n' +
+                            '    [-h | --history]:  . . . . Set max number of historical msgs.\r\n' +
+                            '    [-f | --font]:   . . . . . Set console font.\r\n'
+                        )
+                    });
+                    break;
+                }
+                default: {
+                    addText({
+                        bullet: ' ',
+                        message: `unkonw option: ${command[1]}`,
+                        color: '#E06C75'
+                    });
+                    break;
+                }
+            }
+        },
+        pro: (command) => {
+            switch (command[1] ?? '') {
+                case '-p':
+                case '--pause': {
+                    breakpoint();
+                    addText({ bullet: ' ', message: 'paused.' });
+                    break;
+                }
+                case '-e':
+                case '--end': {
+                    const pauseButtonSelector = vm.runtime.isPackaged ? '' : 'img[class^="stop-all_stop-all_"]';
+                    const pauseButton = document.querySelector(pauseButtonSelector);
+
+                    if (pauseButton) {
+                        pauseButton.click();
+                    }
+                    addText({ bullet: ' ', message: 'end.' });
+                    break;
+                }
+                case '-s':
+                case '--start': {
+                    vm.greenFlag();
+                    addText({ bullet: ' ', message: 'started.' });
+                    break;
+                }
+                case '': {
+                    addText({
+                        bullet: ' ',
+                        message: (
+                            'pro <option>\r\n' +
+                            'option:\r\n' +
+                            '    [-p | --pause]:  . . . . . pause\r\n' +
+                            '    [-e | --end]:  . . . . . . end\r\n' +
+                            '    [-s | --start]:  . . . . . start\r\n'
+                        )
+                    });
+                    break;
+                }
+                default: {
+                    addText({
+                        bullet: ' ',
+                        message: `unknown option ${command[1]}`,
+                        color: '#E06C75'
+                    });
+                    break;
+                }
+            }
+        }
+    };
+
+    // 暂停
+    const breakpoint = () => {
+        const pauseButtonSelector = vm.runtime.isPackaged ? '' : 'img.pause-btn.addons-display-none-pause';
+        const pauseButton = document.querySelector(pauseButtonSelector);
+
+        if (pauseButton) {
+            pauseButton.click();
         }
     }
 
@@ -514,7 +615,7 @@
             " ": '&nbsp;',
             "\n": '<br>'
         };
-        return text.replace(/[<>&"' \n]/g, function (m) { return map[m]; });
+        return String(text).replace(/[<>&"' \n]/g, function (m) { return map[m]; });
     }
 
     function addText({ message, color, bullet = '', innerHTML = false }) {
@@ -565,7 +666,7 @@
         imageElement.style.width = '150px';
         imageElement.style.margin = '10px';
 
-        content.appendChild(br);
+        // content.appendChild(br);
 
         content.appendChild(imageElement);
 
@@ -591,7 +692,7 @@
 
     addText({
         color: '#808080',
-        message: lang('debugger.tipForHelp', 'Type "ext -help" to view help.'),
+        message: lang('debugger.tipForHelp', 'Type "ext -?" to view help.'),
     });
 
     class ExtensionBlocks {
@@ -843,12 +944,7 @@
         }
 
         breakpoint() {
-            const pauseButtonSelector = vm.runtime.isPackaged ? '[class*="pause-button"]' : 'img.pause-btn.addons-display-none-pause';
-            const pauseButton = document.querySelector(pauseButtonSelector);
-
-            if (pauseButton) {
-                pauseButton.click();
-            }
+            breakpoint();
         }
 
         breakpointAndLog({ message }) {

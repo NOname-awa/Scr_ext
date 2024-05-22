@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.4
+    // V2.9.5
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -417,10 +417,10 @@
     const getDarkMode = () => {
         try {
             let theme = JSON.parse(localStorage.getItem('tw:theme'));
-            return theme.gui !== 'light';
+            return theme.gui === 'dark';
         }
         catch (error) {
-            return 'dark';
+            return false;
         }
     };
 
@@ -3895,7 +3895,7 @@
                 blockType: BlockType.REPORTER,
                 text: formatMessage({
                     id: 'OPERATION.COLOR_BLEND',
-                    default: 'bled [COLOR1] and [COLOR2] ratio [RATIO] %'
+                    default: 'blend [COLOR1] and [COLOR2] ratio [RATIO] %'
                 }),
                 arguments: {
                     COLOR1: {
