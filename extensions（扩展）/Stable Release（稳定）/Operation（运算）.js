@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.5
+    // V2.9.6
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -89,6 +89,7 @@
             "OPERATION.REPLACE": "替换 [STRING1] 中的 [STRING2] 为 [STRING3]",
             "OPERATION.REPLACE_INDEX": "替换 [STRING] 中的第 [START] 到 [END] 为 [REPLACEMENT]",
             "OPERATION.REPLACE_INDEX_CHAR": "替换 [STRING] 中的第 [INDEX] 个字符为 [REPLACEMENT]",
+            "OPERATION.SPLIT_CONTAINS": "按 [SYMBOL] 分割 [STRING1] 后包含 [STRING2] ？",
             "OPERATION.SPLIT": "按 [SYMBOL] 分割 [STRING] 获取第 [NUM] 项",
             "OPERATION.SPLIT_REMOVE": "按 [SYMBOL] 分割 [STRING] 删除第 [NUM] 项",
             "OPERATION.SPLIT_INSERT": "按 [SYMBOL] 分割 [STRING] 在第 [INDEX] 项前插入 [INSERT_STR]",
@@ -156,6 +157,7 @@
             "OPERATION.MIN": "最小值",
             "OPERATION.MEAN": "平均值",
             "OPERATION.SUM": "总和",
+            "OPERATION.ITEM_COUNT": "項目数",
             "OPERATION.AREA": "面积",
             "OPERATION.CIRCUMFERENCE": "周长",
             "OPERATION.RADIUS": "半径",
@@ -201,7 +203,7 @@
             "OPERATION.HIDE_BASE_BLOCK": "隱藏進制積木",
             "OPERATION.SHOW_RARD": "顯示不常用積木",
             "OPERATION.HIDE_RARD": "隱藏不常用積木",
-            "OPERATION.CONSTRAIN": "約束 [NUM] 介於 [LOW] 和 [HIGH] 之間",
+            "OPERATION.CONSTRAIN": "限制 [NUM] 介於 [LOW] 和 [HIGH] 之間",
             "OPERATION.LOOP_NUMBER": "讓 [NUM] 在範圍 [START] 到 [END] 內循環",
             "OPERATION.ROUND": "將 [NUM1] 四捨五入到 [NUM2] 小數位",
             "OPERATION.MAP_OFF": "映射 [NUM] 從 [START1]～[END1] 到 [START2]～[END2]",
@@ -234,13 +236,14 @@
             "OPERATION.REPLACE": "在 [STRING1] 中把 [STRING2] 替換為 [STRING3]",
             "OPERATION.REPLACE_INDEX": "在 [STRING] 的 [START] 到 [END] 之間替換為 [REPLACEMENT]",
             "OPERATION.REPLACE_INDEX_CHAR": "在 [STRING] 的第 [INDEX] 個字元替換為 [REPLACEMENT]",
-            "OPERATION.SPLIT": "按 [SYMBOL] 分割 [STRING] 獲取第 [NUM] 個元素",
-            "OPERATION.SPLIT_REMOVE": "按 [SYMBOL] 分割 [STRING] 刪除第 [NUM] 個元素",
-            "OPERATION.SPLIT_INSERT": "按 [SYMBOL] 分割 [STRING] 在第 [INDEX] 個元素前插入 [INSERT_STR]",
-            "OPERATION.SPLIT_REPLACE": "按 [SYMBOL] 分割 [STRING] 把第 [INDEX] 個元素替換為 [REPLACE_STR]",
-            "OPERATION.SPLIT_BY_COUNT": "按每 [COUNT] 個字元分割 [STRING] 獲取第 [NUM] 個元素",
+            "OPERATION.SPLIT_CONTAINS": "按 [SYMBOL] 分割 [STRING1] 後包含 [STRING2] ？",
+            "OPERATION.SPLIT": "按 [SYMBOL] 分割 [STRING] 獲取第 [NUM] 個項目",
+            "OPERATION.SPLIT_REMOVE": "按 [SYMBOL] 分割 [STRING] 刪除第 [NUM] 個項目",
+            "OPERATION.SPLIT_INSERT": "按 [SYMBOL] 分割 [STRING] 在第 [INDEX] 個項目前插入 [INSERT_STR]",
+            "OPERATION.SPLIT_REPLACE": "按 [SYMBOL] 分割 [STRING] 把第 [INDEX] 個項目替換為 [REPLACE_STR]",
+            "OPERATION.SPLIT_BY_COUNT": "按每 [COUNT] 個字元分割 [STRING] 獲取第 [NUM] 個項目",
             "OPERATION.SPLIT_ANALYSIS": "按 [SYMBOL] 分割 [STRING] 獲取 [MODE]",
-            "OPERATION.SPLIT_SHUFFLE": "按 [SYMBOL] 分割 [STRING] 隨機排序所有元素",
+            "OPERATION.SPLIT_SHUFFLE": "按 [SYMBOL] 分割 [STRING] 隨機排序所有項目",
             "OPERATION.TOGGLE_CASE": "[STRING2] 在 [STRING1] 中 [MODE]",
             "OPERATION.CONVERT": "把 [STRING] [MODE]",
             "OPERATION.JOIN": "組合字串 [STRING]",
@@ -300,6 +303,7 @@
             "OPERATION.MIN": "最小值",
             "OPERATION.MEAN": "平均值",
             "OPERATION.SUM": "總和",
+            "OPERATION.ITEM_COUNT": "項目數",
             "OPERATION.AREA": "面積",
             "OPERATION.CIRCUMFERENCE": "周長",
             "OPERATION.RADIUS": "半徑",
@@ -317,6 +321,7 @@
         },
         "ar": {
             "OPERATION.ROOT": "[NUM1] [RTL_ROOT] [NUM2]",
+            "OPERATION.SQUARE_ROOT": "[RTL_ROOT] [NUM]",
             "OPERATION.CUBE_ROOT": "؆ [NUM]",
             "OPERATION.TO_PERCENT": "[NUM] ٪"
         }
@@ -406,7 +411,7 @@
             <sodipodi:namedview id="namedview1" pagecolor="#6859ff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:document-units="mm" inkscape:zoom="3.8753182" inkscape:cx="54.576164" inkscape:cy="108.50722" inkscape:window-width="1920" inkscape:window-height="1027" inkscape:window-x="1912" inkscape:window-y="-8" inkscape:window-maximized="1" inkscape:current-layer="svg1" />
             <defs id="defs1" />
             ${customBlockText.isShadow && customBlockText.isEnabled ? '<path style="font-size:37.6908px;opacity:0.4;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:' + (customBlockText.isBold && customBlockText.isEnabled ? '2' : '0.8') + ';stroke-dasharray:none;stroke-opacity:1" d="M 16.758463,12.116668 H 45.383332 V 12.92278 H 18.149401 L 8.9344399,42.733106 4.1451872,33.644593 1.5529852,38.781578 0.38333326,37.627733 4.5245342,29.392748 8.9028259,37.548703 Z" id="text1" aria-label="root" sodipodi:nodetypes="ccccccccccc" inkscape:label="shadow" />' : ''}
-            <path style="font-size:37.6908px;opacity:1;fill:${getBlockColor() === 'highContrast' ? '#000000' : '#ffffff'};stroke:${getBlockColor() === 'highContrast' ? '#000000' : '#ffffff'};stroke-width:${customBlockText.isBold && customBlockText.isEnabled ? '2' : '0.8'};stroke-dasharray:none;stroke-opacity:1" d="m 18.875263,10 h 28.624869 v 0.806112 H 20.266201 l -9.214962,29.810326 -4.7892533,-9.088513 -2.592202,5.136985 -1.169652,-1.153845 4.141201,-8.234985 4.3782923,8.155955 z" id="text1-9" aria-label="root" sodipodi:nodetypes="ccccccccccc" inkscape:label="root" />
+            <path style="font-size:37.6908px;opacity:1;fill:${getBlockColor() === 'highContrast' ? '#000000' : ('#ffffff' + (getBlockColor() === 'dark' ? 'b3' : ''))};stroke:${getBlockColor() === 'highContrast' ? '#000000' : ('#ffffff' + (getBlockColor() === 'dark' ? 'b3' : ''))};stroke-width:${customBlockText.isBold && customBlockText.isEnabled ? '2' : '0.8'};stroke-dasharray:none;stroke-opacity:1" d="m 18.875263,10 h 28.624869 v 0.806112 H 20.266201 l -9.214962,29.810326 -4.7892533,-9.088513 -2.592202,5.136985 -1.169652,-1.153845 4.141201,-8.234985 4.3782923,8.155955 z" id="text1-9" aria-label="root" sodipodi:nodetypes="ccccccccccc" inkscape:label="root" />
             </svg>
         `;
         rtlRoot += btoa(svg_content);
@@ -417,7 +422,7 @@
     const getDarkMode = () => {
         try {
             let theme = JSON.parse(localStorage.getItem('tw:theme'));
-            return theme.gui === 'dark';
+            return theme.gui !== 'light' || theme.gui === 'dark';
         }
         catch (error) {
             return false;
@@ -432,8 +437,8 @@
     mask.style.position = 'fixed';
     mask.style.top = '0';
     mask.style.left = '0';
-    mask.style.width = '100vw';
-    mask.style.height = '100vh';
+    mask.style.width = '100%';
+    mask.style.height = '100%';
     mask.style.backgroundColor = isDark ? '#333333AA' : '#8c81ffe6';
     mask.style.zIndex = '998';
     mask.style.display = 'none';
@@ -1880,6 +1885,26 @@
 
                 ...sep(rareHideAndSow('math')),
                 {
+                    opcode: 'squareRoot',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.SQUARE_ROOT',
+                        default: '√ [NUM]'
+                    }),
+                    arguments: {
+                        NUM: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: ''
+                        },
+                        RTL_ROOT: {
+                            type: ArgumentType.IMAGE,
+                            dataURI: rtlRoot,
+                            flipRTL: true
+                        }
+                    },
+                    hideFromPalette: true
+                },
+                {
                     opcode: 'cubeRoot',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
@@ -3085,6 +3110,42 @@
                 hideFromPalette: HideBlockType.split
             },
             ...[
+                {
+                    opcode: 'splitContains',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.SPLIT_CONTAINS',
+                        default: 'split [STRING1] by [SYMBOL], contains [STRING2] ?'
+                    }),
+                    arguments: {
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            }) + '/' + formatMessage({
+                                id: 'OPERATION.ARG_BANANA',
+                                default: 'banana'
+                            }) + '/' + formatMessage({
+                                id: 'OPERATION.ARG_PEACH',
+                                default: 'peach'
+                            })
+                        },
+                        SYMBOL: {
+                            type: ArgumentType.STRING,
+                            defaultValue: '/'
+                        },
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: formatMessage({
+                                id: 'OPERATION.ARG_APPLE',
+                                default: 'apple'
+                            })
+                        }
+                    },
+                    hideFromPalette: HideBlockType.split
+                },
+                ...sep(HideBlockType.split),
                 {
                     // 这个是为了做出整数输入框 (math_integer)
                     blockType: BlockType.XML,
@@ -4475,6 +4536,13 @@
                         }),
                         value: 'sum'
                     },
+                    {
+                        text: formatMessage({
+                            id: 'OPERATION.ITEM_COUNT',
+                            default: 'item count'
+                        }),
+                        value: 'itemCount'
+                    }
                 ]
             },
             GRAPH_MODE: {
@@ -4738,6 +4806,7 @@
                     return sum / numberArr.length;
                 }
                 case 'sum': return numberArr.reduce((acc, curr) => acc + Number(curr), 0);
+                case 'itemCount': return numberArr.length;
             }
         }
 
@@ -4761,6 +4830,10 @@
             let r = 1;
             for (; num > 1; num--) r *= num;
             return r;
+        }
+
+        squareRoot({ NUM }) {
+            return Math.pow(Cast.toNumber(NUM), 1 / 2);
         }
 
         cubeRoot({ NUM }) {
@@ -5043,10 +5116,13 @@
             let operand = String(args.OPERAND).toLowerCase();
             for (let key in args) {
                 if (key !== 'OPERAND') {
-                    if (args.hasOwnProperty(key)) {
-                        options.push(
-                            String(args[key]).toLowerCase()
-                        );
+                    if (typeof args[key] !== 'object') {
+                        // 在解释器下会有 mutation
+                        if (args.hasOwnProperty(key)) {
+                            options.push(
+                                String(args[key]).toLowerCase()
+                            );
+                        }
                     }
                 }
             }
@@ -5120,10 +5196,13 @@
             let operand = String(args.OPERAND);
             for (let key in args) {
                 if (key !== 'OPERAND') {
-                    if (args.hasOwnProperty(key)) {
-                        options.push(
-                            String(args[key])
-                        );
+                    if (typeof args[key] !== 'object') {
+                        // 在解释器下会有 mutation
+                        if (args.hasOwnProperty(key)) {
+                            options.push(
+                                String(args[key])
+                            );
+                        }
                     }
                 }
             }
@@ -5319,6 +5398,15 @@
             return '';
         }
 
+        splitContains({ STRING1, SYMBOL, STRING2 }) {
+            const str1 = String(STRING1);
+            const str2 = String(STRING2);
+            const symbol = String(SYMBOL);
+            const regex = new RegExp(symbol, 'i');
+            const splitted = str1.split(regex);
+            return splitted.includes(str2);
+        }
+
         split({ STRING, SYMBOL, NUM }) {
             const str = String(STRING);
             const symbol = String(SYMBOL);
@@ -5423,6 +5511,7 @@
                     return sum / numberArr.length;
                 }
                 case 'sum': return numberArr.reduce((acc, curr) => acc + Number(curr), 0);
+                case 'itemCount': return splitted.length;
             }
         }
 
@@ -5458,7 +5547,10 @@
             let r = '';
             for (let key in args) {
                 if (args.hasOwnProperty(key)) {
-                    r += String(args[key]);
+                    if (typeof args[key] !== 'object') {
+                        // 在解释器下会有 mutation
+                        r += String(args[key]);
+                    }
                 }
             }
             return r;
