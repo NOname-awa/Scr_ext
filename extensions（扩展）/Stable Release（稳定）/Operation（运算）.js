@@ -5550,16 +5550,14 @@
         }
 
         infJoin(args) {
-            let r = '';
-            for (let key in args) {
-                if (args.hasOwnProperty(key)) {
-                    if (typeof args[key] !== 'object') {
-                        // 在解释器下会有 mutation
-                        r += String(args[key]);
-                    }
-                }
-            }
-            return r;
+            let keys = Object.keys(args).filter(key => key.startsWith('ADD'));
+            keys.sort((a, b) => {
+                let numA = parseInt(a.slice(3));
+                let numB = parseInt(b.slice(3));
+                return numA - numB;
+            });
+            let result = keys.map(key => args[key]).join('');
+            return result;
         }
 
         getUnicode({ STRING }) {
