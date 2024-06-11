@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.9.6
+    // V2.10.0
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -425,6 +425,12 @@
             return theme.gui !== 'light' || theme.gui === 'dark';
         }
         catch (error) {
+            try {
+                if (localStorage.getItem('tw:theme') === 'dark') {
+                    return true;
+                }
+            }
+            catch (error) { }
             return false;
         }
     };
@@ -707,7 +713,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: splitBlock + ' (07)',
+            text: splitBlock + ' (08)',
             buttonText: HideBlockType.split ? expand : collapse,
             icon: typeIcons.splitIcon,
             runCode: (() => {
