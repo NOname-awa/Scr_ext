@@ -86,6 +86,7 @@
             "OPERATION.REMOVE": "删除 [STRING] 的 [START] 到 [END]",
             "OPERATION.REMOVE_CHAR": "删除 [STRING] 的第 [INDEX] 个字符",
             "OPERATION.INSERT": "在 [STRING] 的第 [INDEX] 字符前插入 [INSERT_STR]",
+            "OPERATION.REPLACE_ALL": "替换 [STRING1] 中的全部 [STRING2] 为 [STRING3]",
             "OPERATION.REPLACE": "替换 [STRING1] 中的 [STRING2] 为 [STRING3]",
             "OPERATION.REPLACE_INDEX": "替换 [STRING] 中的第 [START] 到 [END] 为 [REPLACEMENT]",
             "OPERATION.REPLACE_INDEX_CHAR": "替换 [STRING] 中的第 [INDEX] 个字符为 [REPLACEMENT]",
@@ -99,6 +100,7 @@
             "OPERATION.SPLIT_SHUFFLE": "按 [SYMBOL] 分割 [STRING] 打乱所有项",
             "OPERATION.TOGGLE_CASE": "[STRING2] 在 [STRING1] 中 [MODE]",
             "OPERATION.CONVERT": "转换 [STRING] 为 [MODE]",
+            "OPERATION.AFTER_OR_BEFOTR_TEXT": "[STRING1] 中在 [STRING2] [MODE] 的文本",
             "OPERATION.JOIN": "连接文字 [STRING]",
             "OPERATION.GET_JOIN": "连接的文本",
             "OPERATION.INF_JOIN": "连接",
@@ -151,6 +153,8 @@
             "OPERATION.LOWERCASE": "小写",
             "OPERATION.CAPITALIZE": "首字母大写",
             "OPERATION.REVERSE": "倒序",
+            "OPERATION.AFTER": "之前",
+            "OPERATION.BEFORE": "之后",
             "OPERATION.FRONT": "开头",
             "OPERATION.BACK": "结尾",
             "OPERATION.MAX": "最大值",
@@ -233,6 +237,7 @@
             "OPERATION.REMOVE": "刪除 [STRING] 從 [START] 到 [END]",
             "OPERATION.REMOVE_CHAR": "刪除 [STRING] 的第 [INDEX] 個字元",
             "OPERATION.INSERT": "在 [STRING] 的第 [INDEX] 個字元前插入 [INSERT_STR]",
+            "OPERATION.REPLACE_ALL": "在 [STRING1] 中把全部 [STRING2] 替換為 [STRING3]",
             "OPERATION.REPLACE": "在 [STRING1] 中把 [STRING2] 替換為 [STRING3]",
             "OPERATION.REPLACE_INDEX": "在 [STRING] 的 [START] 到 [END] 之間替換為 [REPLACEMENT]",
             "OPERATION.REPLACE_INDEX_CHAR": "在 [STRING] 的第 [INDEX] 個字元替換為 [REPLACEMENT]",
@@ -246,6 +251,7 @@
             "OPERATION.SPLIT_SHUFFLE": "按 [SYMBOL] 分割 [STRING] 隨機排序所有項目",
             "OPERATION.TOGGLE_CASE": "[STRING2] 在 [STRING1] 中 [MODE]",
             "OPERATION.CONVERT": "把 [STRING] [MODE]",
+            "OPERATION.AFTER_OR_BEFOTR_TEXT": "[STRING1] 中在 [STRING2] [MODE] 的字串",
             "OPERATION.JOIN": "組合字串 [STRING]",
             "OPERATION.GET_JOIN": "組合的字串",
             "OPERATION.INF_JOIN": "字串組合",
@@ -297,6 +303,8 @@
             "OPERATION.LOWERCASE": "轉換為小寫",
             "OPERATION.CAPITALIZE": "轉換為首字母大寫",
             "OPERATION.REVERSE": "反轉",
+            "OPERATION.AFTER": "之前",
+            "OPERATION.BEFORE": "之後",
             "OPERATION.FRONT": "前端",
             "OPERATION.BACK": "後端",
             "OPERATION.MAX": "最大值",
@@ -703,7 +711,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: stringBlock + ' (21)',
+            text: stringBlock + ' (23)',
             buttonText: HideBlockType.string ? expand : collapse,
             icon: typeIcons.stringIcon,
             runCode: (() => {
@@ -747,7 +755,7 @@
         );
 
         windowContent.appendChild(newOption({
-            text: miscellaneousBlock + ' (29)',
+            text: miscellaneousBlock + ' (30)',
             buttonText: HideBlockType.miscellaneous ? expand : collapse,
             icon: typeIcons.miscellaneousIcon,
             runCode: (() => {
@@ -2558,6 +2566,29 @@
                             defaultValue: 'Hello world!'
                         }
                     },
+                    hideFromPalette: rareHideAndSow('string')
+                },
+                {
+                    opcode: 'replaceAll_ci',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.REPLACE_ALL',
+                        default: 'replace all [STRING2] with [STRING3] in [STRING1]'
+                    }),
+                    arguments: {
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'world'
+                        },
+                        STRING3: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Scratch'
+                        },
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'Hello world!'
+                        }
+                    },
                     hideFromPalette: HideBlockType.string
                 },
 
@@ -2918,6 +2949,29 @@
                         STRING: {
                             type: ArgumentType.STRING,
                             defaultValue: 'apple banana'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.string
+                },
+                {
+                    opcode: 'aftOrBfrStr',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'OPERATION.AFTER_OR_BEFOTR_TEXT',
+                        default: 'text [MODE] [STRING1] in [STRING2]'
+                    }),
+                    arguments: {
+                        MODE: {
+                            type: ArgumentType.STRING,
+                            menu: 'AFTER_BEFOTR_MODE'
+                        },
+                        STRING1: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'apple and banana'
+                        },
+                        STRING2: {
+                            type: ArgumentType.STRING,
+                            defaultValue: ' and '
                         }
                     },
                     hideFromPalette: HideBlockType.string
@@ -4177,6 +4231,34 @@
                         defaultValue: 'Hello world!'
                     }
                 },
+                hideFromPalette: rareHideAndSow('string') || HideBlockType.letterCase || HideBlockType.miscellaneous
+            },
+            {
+                ...getColor('string'),
+                opcode: 'replaceAll',
+                blockType: BlockType.REPORTER,
+                text: '[ICON]' + formatMessage({
+                    id: 'OPERATION.REPLACE_ALL',
+                    default: 'replace all [STRING2] with [STRING3] in [STRING1]'
+                }),
+                arguments: {
+                    ICON: {
+                        type: ArgumentType.IMAGE,
+                        dataURI: AaIcon
+                    },
+                    STRING2: {
+                        type: ArgumentType.STRING,
+                        defaultValue: 'world'
+                    },
+                    STRING3: {
+                        type: ArgumentType.STRING,
+                        defaultValue: 'Scratch'
+                    },
+                    STRING1: {
+                        type: ArgumentType.STRING,
+                        defaultValue: 'Hello world!'
+                    }
+                },
                 hideFromPalette: HideBlockType.string || HideBlockType.letterCase || HideBlockType.miscellaneous
             },
             {
@@ -4508,6 +4590,25 @@
                             default: 'reverse'
                         }),
                         value: 'reverse'
+                    }
+                ]
+            },
+            AFTER_BEFOTR_MODE: {
+                acceptReporters: false,
+                items: [
+                    {
+                        text: formatMessage({
+                            id: 'OPERATION.AFTER',
+                            default: 'after'
+                        }),
+                        value: 'after'
+                    },
+                    {
+                        text: formatMessage({
+                            id: 'OPERATION.BEFORE',
+                            default: 'before'
+                        }),
+                        value: 'before'
                     }
                 ]
             },
@@ -5347,7 +5448,21 @@
             return text.replace(new RegExp(oldStr, 'i'), newStr);
         }
 
+        replaceAll_ci({ STRING1, STRING2, STRING3 }) {
+            const text = String(STRING1);
+            const oldStr = String(STRING2);
+            const newStr = String(STRING3);
+            return text.replace(new RegExp(oldStr, 'gi'), newStr);
+        }
+
         replace({ STRING1, STRING2, STRING3 }) {
+            const text = String(STRING1);
+            const oldStr = String(STRING2);
+            const newStr = String(STRING3);
+            return text.replace(new RegExp(oldStr, ''), newStr);
+        }
+
+        replaceAll({ STRING1, STRING2, STRING3 }) {
             const text = String(STRING1);
             const oldStr = String(STRING2);
             const newStr = String(STRING3);
@@ -5402,6 +5517,24 @@
             if (MODE === 'capitalize') return this._textToTitleCase(String(STRING));
             if (MODE === 'reverse') return (String(STRING)).split('').reverse().join('');
             return '';
+        }
+
+        aftOrBfrStr({ MODE, STRING1, STRING2 }) {
+            const str1 = String(STRING1);
+            const str2 = String(STRING2);
+
+            if (str1 === '') return '';
+            if (str2 === '') return str1;
+        
+            const index = str1.toLowerCase().indexOf(str2.toLowerCase());
+        
+            if (index === -1) return str1;
+        
+            if (MODE === 'after') {
+                return str1.substring(index + str2.length);
+            } else {
+                return str1.substring(0, index);
+            }
         }
 
         splitContains({ STRING1, SYMBOL, STRING2 }) {
