@@ -1,2 +1,0 @@
-⚠ 警告：如果你想使用这里的扩展，请使用 "../稳定/" 中的扩展，该文件夹中的扩展未测试其兼任性，并且可能存在大量 BUG。
-⚠ warning: If you want to use the extensions here, please use the extensions in the "../Stable Release/" folder. The extensions in that folder have not been tested for compatibility and may contain numerous bugs.
