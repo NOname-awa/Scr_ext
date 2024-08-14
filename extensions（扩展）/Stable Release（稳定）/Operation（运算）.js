@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.10.1
+    // V2.10.2
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -4839,11 +4839,11 @@
         }
 
         squareRoot({ NUM }) {
-            return Math.pow(Cast.toNumber(NUM), 1 / 2);
+            return Math.sqrt(Cast.toNumber(NUM));
         }
 
         cubeRoot({ NUM }) {
-            return Math.pow(Cast.toNumber(NUM), 1 / 3);
+            return Math.cbrt(Cast.toNumber(NUM));
         }
 
         toPercent({ NUM }) {
