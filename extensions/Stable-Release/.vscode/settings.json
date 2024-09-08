@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.nako": "nadesiko3",
+        ".xonshrc": "xonsh",
+        "ASCII.C": "cpp"
+    }
+}
