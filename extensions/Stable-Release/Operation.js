@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.10.3
+    // V2.10.5
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -4649,6 +4649,13 @@
                             default: 'item count'
                         }),
                         value: 'itemCount'
+                    },
+                    {
+                        text: formatMessage({
+                            id: 'OPERATION.RANDOM',
+                            default: 'random'
+                        }),
+                        value: 'random'
                     }
                 ]
             },
@@ -4914,6 +4921,7 @@
                 }
                 case 'sum': return numberArr.reduce((acc, curr) => acc + Number(curr), 0);
                 case 'itemCount': return numberArr.length;
+                case 'random': return numberArr[Math.floor(Math.random() * numberArr.length)];
             }
         }
 
@@ -5662,6 +5670,7 @@
                 }
                 case 'sum': return numberArr.reduce((acc, curr) => acc + Number(curr), 0);
                 case 'itemCount': return splitted.length;
+                case 'random': return splitted[Math.floor(Math.random() * splitted.length)];
             }
         }
 
