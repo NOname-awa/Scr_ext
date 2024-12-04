@@ -1,7 +1,7 @@
 (function (Scratch) {
     "use strict";
     
-    // V1.0.2
+    // V1.0.3
 
     Scratch.translate.setup({
         "zh": {
@@ -19,8 +19,8 @@
             "control.wait": "等待 [DURATION] [UNITS]",
             "control.stopSprite": "停止角色 [SPRITE]",
             "control.greenFlag": "重启项目",
-            "control.switchCase": "执行分支: [INPUT]",
-            "control.switchCaseCase": "分支条件: [INPUT]",
+            "control.switchCase": "选择: [INPUT]",
+            "control.switchCaseCase": "选项: [INPUT]",
             "control.branch": "分支",
             "control.switchCaseDefault": "默认选项：",
             "control.seconds": "秒",
@@ -52,8 +52,8 @@
             "control.wait": "等待 [DURATION] [UNITS]",
             "control.stopSprite": "停止 [SPRITE]",
             "control.greenFlag": "重新開始",
-            "control.switchCase": "選擇分支: [INPUT]",
-            "control.switchCaseCase": "分支: [INPUT]",
+            "control.switchCase": "選擇: [INPUT]",
+            "control.switchCaseCase": "選項: [INPUT]",
             "control.branch": "分支",
             "control.switchCaseDefault": "預設：",
             "control.seconds": "秒",
@@ -567,7 +567,6 @@
          * @param {number} TIME 重复执行的时间。（秒）
          */
         repeatForSeconds(args, util) {
-            // 这玩意的编译搁 “../../compiler/irgen” 这个文件里。
             const duration = Math.max(0, 1000 * Cast.toNumber(args.TIME));
             if (util.stackTimerNeedsInit()) {
                 util.startStackTimer(duration);
@@ -585,7 +584,6 @@
          * @param {number} VALUE2 结束值。
          */
         for_each_2(args, util) {
-            // 这玩意的编译搁 “../../compiler/irgen” 这个文件里。
             args.VALUE1 = Cast.toNumber(args.VALUE1);
             args.VALUE2 = Cast.toNumber(args.VALUE2);
 
@@ -615,7 +613,6 @@
          * @param {string} STRING 遍历的字符串。 
          */
         for_in_string(args, util) {
-            // 这玩意的编译搁 “../../compiler/irgen” 这个文件里。
             const inputString = String(args.STRING);
 
             const variable = util.target.lookupOrCreateVariable(
