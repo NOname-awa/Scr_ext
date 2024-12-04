@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.10.5
+    // V2.10.6
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -5451,31 +5451,47 @@
 
         replace_ci({ STRING1, STRING2, STRING3 }) {
             const text = String(STRING1);
-            const oldStr = String(STRING2);
+            const oldStr = String(STRING2).toLowerCase();
             const newStr = String(STRING3);
-            return text.replace(new RegExp(oldStr, 'i'), newStr);
+            const index = text.toLowerCase().indexOf(oldStr);
+            if (index !== -1) {
+                return text.substring(0, index) + newStr + text.substring(index + oldStr.length);
+            }
+            return text;
         }
-
+        
         replaceAll_ci({ STRING1, STRING2, STRING3 }) {
-            const text = String(STRING1);
-            const oldStr = String(STRING2);
+            let text = String(STRING1);
+            const oldStr = String(STRING2).toLowerCase();
             const newStr = String(STRING3);
-            return text.replace(new RegExp(oldStr, 'gi'), newStr);
+            let index;
+            while ((index = text.toLowerCase().indexOf(oldStr)) !== -1) {
+                text = text.substring(0, index) + newStr + text.substring(index + oldStr.length);
+            }
+            return text;
         }
-
+        
         replace({ STRING1, STRING2, STRING3 }) {
             const text = String(STRING1);
             const oldStr = String(STRING2);
             const newStr = String(STRING3);
-            return text.replace(new RegExp(oldStr, ''), newStr);
+            const index = text.indexOf(oldStr);
+            if (index !== -1) {
+                return text.substring(0, index) + newStr + text.substring(index + oldStr.length);
+            }
+            return text;
         }
-
+        
         replaceAll({ STRING1, STRING2, STRING3 }) {
-            const text = String(STRING1);
+            let text = String(STRING1);
             const oldStr = String(STRING2);
             const newStr = String(STRING3);
-            return text.replace(new RegExp(oldStr, 'g'), newStr);
-        }
+            let index;
+            while ((index = text.indexOf(oldStr)) !== -1) {
+                text = text.substring(0, index) + newStr + text.substring(index + oldStr.length);
+            }
+            return text;
+        }        
 
         replaceIndex({ STRING, START, END, REPLACEMENT }) {
             let str = String(STRING);
