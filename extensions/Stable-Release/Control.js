@@ -188,6 +188,7 @@
                         blockType: BlockType.CONDITIONAL,
                         branchCount: 1,
                         text: lang('control.for_each_2', 'for each [VARIABLE] in [VALUE1] to [VALUE2]'),
+                        hideFromPalette: true,
                         arguments: {
                             VARIABLE: {
                                 type: ArgumentType.STRING,
@@ -209,6 +210,7 @@
                         blockType: BlockType.CONDITIONAL,
                         branchCount: 1,
                         text: lang('control.for_in_string', 'for [VARIABLE] in str: [STRING]'),
+                        hideFromPalette: true,
                         arguments: {
                             VARIABLE: {
                                 type: ArgumentType.STRING,
