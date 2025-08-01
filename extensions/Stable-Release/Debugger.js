@@ -120,9 +120,15 @@
     const getDarkMode = () => {
         try {
             let theme = JSON.parse(localStorage.getItem('tw:theme'));
-            return theme.gui === 'dark';
+            return theme.gui !== 'light' || theme.gui === 'dark';
         }
         catch (error) {
+            try {
+                if (localStorage.getItem('tw:theme') === 'dark') {
+                    return true;
+                }
+            }
+            catch (error) { }
             return false;
         }
     };
