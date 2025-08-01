@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.10.6
+    // V2.10.7
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -5511,7 +5511,9 @@
             });
         }
 
-        _countKeyword = (sentence, keyword, ci = false) => (sentence.match(new RegExp(keyword, ci ? 'gi' : 'g')) || []).length;
+        _countKeyword = (sentence, keyword, ci = false) => (
+            sentence.match(new RegExp(this.escapeRegExp(keyword), ci ? 'gi' : 'g')) || []
+        ).length;
 
         toggleCase_ci({ MODE, STRING2, STRING1 }) {
             const str1 = String(STRING1).toLowerCase();
