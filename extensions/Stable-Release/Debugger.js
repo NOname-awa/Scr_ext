@@ -1,7 +1,7 @@
 ((Scratch) => {
     'use strict';
 
-    const version = '0.3';
+    const version = '0.3.1';
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
