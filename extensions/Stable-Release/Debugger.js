@@ -1,7 +1,7 @@
 ((Scratch) => {
     'use strict';
 
-    const version = '0.3.1';
+    const version = '0.3.2';
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -338,9 +338,7 @@
                 return;
             }
             case 'inp': {
-                let inStr = stripQuotes(command[1] ?? '');
-
-                lastInput = inStr;
+                lastInput = (input.startsWith("inp") ? input.slice(3) : input).trim();
                 vm.runtime.startHats('debugger_whenInput');
                 return;
             }
