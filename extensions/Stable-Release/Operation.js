@@ -21,7 +21,7 @@
 ((Scratch) => {
     'use strict';
 
-    // V2.10.7
+    // V2.10.8
 
     const { Cast, ArgumentType, BlockType } = Scratch;
 
@@ -114,7 +114,7 @@
             "OPERATION.CALCULATE_LINE_DIRECTION": "([X1],[Y1]) 到 ([X2],[Y2]) 的角度",
             "OPERATION.CALCULATE_MIDPOINT": "([X1],[Y1]) 与 ([X2],[Y2]) 的中点",
             "OPERATION.CALCULATE_SLOPE": "([X1], [Y1]) 与 ([X2], [Y2]) 的斜率",
-            "OPERATION.CALCULATE_INTERSECTION": "计算交点 ([X1],[Y1]) 到 ([X2],[Y2]) 与 ([X3],[Y3]) 到 ([X4],[Y4])",
+            "OPERATION.CALCULATE_INTERSECTION": "计算线段交点 ([X1],[Y1]) 到 ([X2],[Y2]) 与 ([X3],[Y3]) 到 ([X4],[Y4])",
             "OPERATION.TRIANGLE": "三角形 ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) 的 [MODE]",
             "OPERATION.TRIANGLE_AREA": "三角形 [S1] [S2] [S3] 的面积",
             "OPERATION.RECTANGLE": "四边形 ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) ([X4],[Y4]) 的 [MODE]",
@@ -3499,7 +3499,7 @@
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
                         id: 'OPERATION.CALCULATE_INTERSECTION',
-                        default: 'calculate intersection ([X1],[Y1]) to ([X2],[Y2]) & ([X3],[Y3]) to ([X4],[Y4])'
+                        default: 'calculate line intersection ([X1],[Y1]) to ([X2],[Y2]) & ([X3],[Y3]) to ([X4],[Y4])'
                     }),
                     arguments: {
                         X1: {
@@ -4857,6 +4857,8 @@
             }, this.runtime)
         }
 
+        epsilon = 1e-9;
+
         openSettingWindow() {
             showWindow();
         }
@@ -5256,8 +5258,14 @@
             if (symbol === 'equalNegative') return Cast.compare(arg1, -arg2) === 0;
             if (symbol === 'EqualPON') return Cast.compare(arg1, -arg2) === 0 || Cast.compare(arg1, arg2) === 0;
             if (symbol === 'approximatelyEqual') return Math.abs(arg1 - arg2) <= 0.5;
-            if (symbol === 'vertical') return ((arg1 - (arg2 - 90)) % 180) === 0;
-            if (symbol === 'parallel') return ((arg1 - arg2) % 180) === 0;
+            if (symbol === 'vertical') {
+                let mod = Math.abs((arg1 - arg2 + 90) % 180);
+                return mod < this.epsilon || mod > 180 - this.epsilon;
+            }
+            if (symbol === 'parallel') {
+                let mod = Math.abs((arg1 - arg2) % 180);
+                return mod < this.epsilon || mod > 180 - this.epsilon;
+            }
             return false;
         }
 
@@ -5459,7 +5467,7 @@
             }
             return text;
         }
-        
+
         replaceAll_ci({ STRING1, STRING2, STRING3 }) {
             let text = String(STRING1);
             const oldStr = String(STRING2).toLowerCase();
@@ -5470,7 +5478,7 @@
             }
             return text;
         }
-        
+
         replace({ STRING1, STRING2, STRING3 }) {
             const text = String(STRING1);
             const oldStr = String(STRING2);
@@ -5481,7 +5489,7 @@
             }
             return text;
         }
-        
+
         replaceAll({ STRING1, STRING2, STRING3 }) {
             let text = String(STRING1);
             const oldStr = String(STRING2);
@@ -5491,7 +5499,7 @@
                 text = text.substring(0, index) + newStr + text.substring(index + oldStr.length);
             }
             return text;
-        }        
+        }
 
         replaceIndex({ STRING, START, END, REPLACEMENT }) {
             let str = String(STRING);
@@ -5832,54 +5840,75 @@
             return slope;
         }
 
-        calculateIntersection({ X1, Y1, X2, Y2, X3, Y3, X4, Y4 }) {
-            const x1 = Cast.toNumber(X1);
-            const y1 = Cast.toNumber(Y1);
-            const x2 = Cast.toNumber(X2);
-            const y2 = Cast.toNumber(Y2);
-            const x3 = Cast.toNumber(X3);
-            const y3 = Cast.toNumber(Y3);
-            const x4 = Cast.toNumber(X4);
-            const y4 = Cast.toNumber(Y4);
-            let denominator = (x2 - x1) * (y4 - y3) - (y2 - y1) * (x4 - x3);
-            if (denominator === 0) {
-                return '';
+        _calculatePerimeter(points) {
+            let perimeter = 0;
+            const n = points.length;
+            
+            if (n < 2) return 0;
+
+            for (let i = 0; i < n; i++) {
+                const x1 = points[i][0];
+                const y1 = points[i][1];
+                const x2 = points[(i + 1) % n][0];
+                const y2 = points[(i + 1) % n][1];
+                
+                perimeter += Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
             }
-            let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
-            let x = x1 + ua * (x2 - x1);
-            let y = y1 + ua * (y2 - y1);
+            
+            return perimeter;
+        }
+
+        _getSegmentIntersection(a, b, c, d) {
+            let de = (a[0] - b[0]) * (c[1] - d[1]) - (a[1] - b[1]) * (c[0] - d[0]);
+            if (de === 0) return null;
+
+            let t = ((a[0] - c[0]) * (c[1] - d[1]) - (a[1] - c[1]) * (c[0] - d[0])) / de;
+            let u = ((a[0] - c[0]) * (a[1] - b[1]) - (a[1] - c[1]) * (a[0] - b[0])) / de;
+
+            if (t > this.epsilon && t < 1 - this.epsilon && u > this.epsilon && u < 1 - this.epsilon) {
+                let x = a[0] + t * (b[0] - a[0]);
+                let y = a[1] + t * (b[1] - a[1]);
+                return [x, y];
+            }
+            return null;
+        }
+
+        _getLineIntersection(a, b, c, d) {
+            let de = (b[0] - a[0]) * (d[1] - c[1]) - (b[1] - a[1]) * (d[0] - c[0]);
+
+            if (Math.abs(de) < this.epsilon) {
+                return null;
+            }
+
+            let ua = ((d[0] - c[0]) * (a[1] - c[1]) - (d[1] - c[1]) * (a[0] - c[0])) / de;
+
+            let x = a[0] + ua * (b[0] - a[0]);
+            let y = a[1] + ua * (b[1] - a[1]);
+
             return [x, y];
         }
 
+        calculateIntersection({ X1, Y1, X2, Y2, X3, Y3, X4, Y4 }) {
+            const a = [Cast.toNumber(X1), Cast.toNumber(Y1)];
+            const b = [Cast.toNumber(X2), Cast.toNumber(Y2)];
+            const c = [Cast.toNumber(X3), Cast.toNumber(Y3)];
+            const d = [Cast.toNumber(X4), Cast.toNumber(Y4)];
+
+            const result = this._getLineIntersection(a, b, c, d);
+
+            return result ? result : '';
+        }
+
         triangle({ X1, Y1, X2, Y2, X3, Y3, MODE }) {
-            const x1 = Cast.toNumber(X1);
-            const y1 = Cast.toNumber(Y1);
-            const x2 = Cast.toNumber(X2);
-            const y2 = Cast.toNumber(Y2);
-            const x3 = Cast.toNumber(X3);
-            const y3 = Cast.toNumber(Y3);
-            if (MODE === 'area') {
-                let points = [[x1, y1], [x2, y2], [x3, y3]];
-                let area = 0;
-                let n = points.length;
-                for (let i = 0; i < n; i++) {
-                    let x1 = points[i][0];
-                    let y1 = points[i][1];
-                    let x2 = points[(i + 1) % n][0];
-                    let y2 = points[(i + 1) % n][1];
-                    area += x1 * y2;
-                    area -= x2 * y1;
-                }
-                area = Math.abs(area) / 2;
-                return (area);
-            }
-            if (MODE === 'circumference') {
-                let i = 0;
-                i += Math.sqrt(Math.pow(x1 - Cast.toNumber(x2), 2) + Math.pow(y1 - y2, 2));
-                i += Math.sqrt(Math.pow(x2 - Cast.toNumber(x3), 2) + Math.pow(y2 - y3, 2));
-                i += Math.sqrt(Math.pow(x3 - Cast.toNumber(x1), 2) + Math.pow(y3 - y1, 2));
-                return i;
-            }
+            const points = [
+                [Cast.toNumber(X1), Cast.toNumber(Y1)],
+                [Cast.toNumber(X2), Cast.toNumber(Y2)],
+                [Cast.toNumber(X3), Cast.toNumber(Y3)]
+            ];
+
+            if (MODE === 'area') return this._calculateAbsoluteArea(points);
+            if (MODE === 'circumference') return this._calculatePerimeter(points);
+            
             return 0;
         }
 
@@ -5893,51 +5922,73 @@
         }
 
         rectangle({ X1, Y1, X2, Y2, X3, Y3, X4, Y4, MODE }) {
-            const x1 = Cast.toNumber(X1);
-            const y1 = Cast.toNumber(Y1);
-            const x2 = Cast.toNumber(X2);
-            const y2 = Cast.toNumber(Y2);
-            const x3 = Cast.toNumber(X3);
-            const y3 = Cast.toNumber(Y3);
-            const x4 = Cast.toNumber(X4);
-            const y4 = Cast.toNumber(Y4);
-            if (MODE === 'area') {
-                let points = [[x1, y1], [x2, y2], [x3, y3], [x4, y4]];
-                let area = 0;
-                let n = points.length;
-                for (let i = 0; i < n; i++) {
-                    let x1 = points[i][0];
-                    let y1 = points[i][1];
-                    let x2 = points[(i + 1) % n][0];
-                    let y2 = points[(i + 1) % n][1];
-                    area += x1 * y2;
-                    area -= x2 * y1;
-                }
-                area = Math.abs(area) / 2;
-                return (area);
-            }
-            if (MODE === 'circumference') {
-                let i = 0;
-                i += Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-                i += Math.sqrt(Math.pow(x2 - x3, 2) + Math.pow(y2 - y3, 2));
-                i += Math.sqrt(Math.pow(x3 - x4, 2) + Math.pow(y3 - y4, 2));
-                i += Math.sqrt(Math.pow(x4 - x1, 2) + Math.pow(y4 - y1, 2));
-                return i;
-            }
+            const points = [
+                [Cast.toNumber(X1), Cast.toNumber(Y1)],
+                [Cast.toNumber(X2), Cast.toNumber(Y2)],
+                [Cast.toNumber(X3), Cast.toNumber(Y3)],
+                [Cast.toNumber(X4), Cast.toNumber(Y4)]
+            ];
+
+            if (MODE === 'area') return this._calculateAbsoluteArea(points);
+            if (MODE === 'circumference') return this._calculatePerimeter(points);
+            
             return 0;
         }
 
         _parseGraphString(graphString) {
-            const cleanedGraphString = graphString.replace(/\s/g, '');
-            const regex = /\((\d+),(\d+)\)/g;
+            const cleanedGraphString = graphString.replace(/\s/g, "");
+            const regex = /\((-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\)/g;
             let match;
             const points = [];
 
             while ((match = regex.exec(cleanedGraphString)) !== null) {
-                points.push([parseInt(match[1]), parseInt(match[2])]);
+                points.push([parseFloat(match[1]), parseFloat(match[2])]);
             }
 
             return points;
+        }
+
+        _calculateAbsoluteArea(points, depth = 0) {
+            let n = points.length;
+            if (n < 3) return 0;
+
+            for (let i = 0; i < n; i++) {
+                let p1 = points[i];
+                let p2 = points[(i + 1) % n];
+
+                for (let j = i + 2; j < n; j++) {
+                    if (i === 0 && j === n - 1) continue;
+
+                    let p3 = points[j];
+                    let p4 = points[(j + 1) % n];
+
+                    let intersection = this._getSegmentIntersection(p1, p2, p3, p4);
+
+                    if (intersection) {
+                        let poly1 = points.slice(0, i + 1);
+                        poly1.push(intersection);
+                        if (j + 1 < n) {
+                            poly1 = poly1.concat(points.slice(j + 1));
+                        }
+
+                        let poly2 = [intersection].concat(points.slice(i + 1, j + 1));
+
+                        return this._calculateAbsoluteArea(poly1, depth + 1) + this._calculateAbsoluteArea(poly2, depth + 1);
+                    }
+                }
+            }
+
+            let area = 0;
+            for (let i = 0; i < n; i++) {
+                let x1 = points[i][0];
+                let y1 = points[i][1];
+                let x2 = points[(i + 1) % n][0];
+                let y2 = points[(i + 1) % n][1];
+                area += x1 * y2;
+                area -= x2 * y1;
+            }
+
+            return Math.abs(area) / 2;
         }
 
         graph({ GRAPH, MODE }) {
@@ -5950,31 +6001,8 @@
                     points = JSON.parse(GRAPH);
                 }
                 let n = points.length;
-                if (MODE === 'area') {
-                    let area = 0;
-                    for (let i = 0; i < n; i++) {
-                        let x1 = points[i][0];
-                        let y1 = points[i][1];
-                        let x2 = points[(i + 1) % n][0];
-                        let y2 = points[(i + 1) % n][1];
-                        area += x1 * y2;
-                        area -= x2 * y1;
-                    }
-                    area = Math.abs(area) / 2;
-                    return (area);
-                }
-                if (MODE === 'circumference') {
-                    let j = 0;
-                    const numPoints = points.length;
-                    for (let i = 0; i < numPoints; i++) {
-                        const x1 = points[i][0];
-                        const y1 = points[i][1];
-                        const x2 = points[(i + 1) % numPoints][0];
-                        const y2 = points[(i + 1) % numPoints][1];
-                        j += Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-                    }
-                    return j;
-                }
+                if (MODE === 'area') return this._calculateAbsoluteArea(points);
+                if (MODE === 'circumference') return this._calculatePerimeter(points);
             }
             catch {
                 return 0;
