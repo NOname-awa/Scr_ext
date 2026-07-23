@@ -703,7 +703,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: booleanBlock + ' (13)',
+            text: booleanBlock + ' (12)',
             buttonText: HideBlockType.bool ? expand : collapse,
             icon: typeIcons.booleanIcon,
             runCode: (() => {
@@ -733,7 +733,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: graphBlock + ' (12)',
+            text: graphBlock + ' (13)',
             buttonText: HideBlockType.graph ? expand : collapse,
             icon: typeIcons.graphIcon,
             runCode: (() => {
