@@ -1110,18 +1110,20 @@
                             if (input) {
                                 if (input.block !== null) {
                                     const blockInInput = blocks.getBlock(input.block);
-                                    blockInInput.topLevel = true;
-                                    blockInInput.parent = null;
-                                    blocks.moveBlock({
-                                        id: blockInInput.id,
-                                        oldParent: this.id,
-                                        oldInput: 'ADD' + i,
-                                        newParent: undefined,
-                                        newInput: undefined,
-                                        //newCoordinate: e.newCoordinate
-                                    });
+                                    if (!blockInInput.shadow) {
+                                        blockInInput.topLevel = true;
+                                        blockInInput.parent = null;
+                                        blocks.moveBlock({
+                                            id: blockInInput.id,
+                                            oldParent: this.id,
+                                            oldInput: 'ADD' + i,
+                                            newParent: undefined,
+                                            newInput: undefined,
+                                            //newCoordinate: e.newCoordinate
+                                        });
+                                    }
                                 }
-                                if (input.shadow !== null && input.shadow == input.block) {
+                                if (input.shadow !== null) {
                                     blocks.deleteBlock(input.shadow);
                                 }
                             }
@@ -5843,7 +5845,7 @@
         _calculatePerimeter(points) {
             let perimeter = 0;
             const n = points.length;
-            
+
             if (n < 2) return 0;
 
             for (let i = 0; i < n; i++) {
@@ -5851,10 +5853,10 @@
                 const y1 = points[i][1];
                 const x2 = points[(i + 1) % n][0];
                 const y2 = points[(i + 1) % n][1];
-                
+
                 perimeter += Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
             }
-            
+
             return perimeter;
         }
 
@@ -5908,7 +5910,7 @@
 
             if (MODE === 'area') return this._calculateAbsoluteArea(points);
             if (MODE === 'circumference') return this._calculatePerimeter(points);
-            
+
             return 0;
         }
 
@@ -5931,7 +5933,7 @@
 
             if (MODE === 'area') return this._calculateAbsoluteArea(points);
             if (MODE === 'circumference') return this._calculatePerimeter(points);
-            
+
             return 0;
         }
 
