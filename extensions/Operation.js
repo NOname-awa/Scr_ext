@@ -703,7 +703,7 @@
         }));
 
         windowContent.appendChild(newOption({
-            text: booleanBlock + ' (12)',
+            text: booleanBlock + ' (13)',
             buttonText: HideBlockType.bool ? expand : collapse,
             icon: typeIcons.booleanIcon,
             runCode: (() => {
