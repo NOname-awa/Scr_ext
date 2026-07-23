@@ -114,7 +114,8 @@
             "OPERATION.CALCULATE_LINE_DIRECTION": "([X1],[Y1]) 到 ([X2],[Y2]) 的角度",
             "OPERATION.CALCULATE_MIDPOINT": "([X1],[Y1]) 与 ([X2],[Y2]) 的中点",
             "OPERATION.CALCULATE_SLOPE": "([X1], [Y1]) 与 ([X2], [Y2]) 的斜率",
-            "OPERATION.CALCULATE_INTERSECTION": "计算线段交点 ([X1],[Y1]) 到 ([X2],[Y2]) 与 ([X3],[Y3]) 到 ([X4],[Y4])",
+            "OPERATION.HAS_SEGMENT_INTERSECTION": "线段 ([X1], [Y1]) 到 ([X2], [Y2]) 与 ([X3], [Y3]) 到 ([X4], [Y4]) 相交？",
+            "OPERATION.CALCULATE_INTERSECTION": "计算直线交点 ([X1],[Y1]) 到 ([X2],[Y2]) 与 ([X3],[Y3]) 到 ([X4],[Y4])",
             "OPERATION.TRIANGLE": "三角形 ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) 的 [MODE]",
             "OPERATION.TRIANGLE_AREA": "三角形 [S1] [S2] [S3] 的面积",
             "OPERATION.RECTANGLE": "四边形 ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) ([X4],[Y4]) 的 [MODE]",
@@ -265,7 +266,8 @@
             "OPERATION.CALCULATE_LINE_DIRECTION": "從 ([X1],[Y1]) 到 ([X2],[Y2]) 的角度",
             "OPERATION.CALCULATE_MIDPOINT": "([X1],[Y1]) 與 ([X2],[Y2]) 的中點",
             "OPERATION.CALCULATE_SLOPE": "([X1], [Y1]) 與 ([X2], [Y2]) 的斜率",
-            "OPERATION.CALCULATE_INTERSECTION": "計算從線段 ([X1],[Y1]) 到 ([X2],[Y2]) 和線段 ([X3],[Y3]) 到 ([X4],[Y4]) 的交點",
+            "OPERATION.HAS_SEGMENT_INTERSECTION": "線段 ([X1], [Y1]) 到 ([X2], [Y2]) 和線段 ([X3], [Y3]) 到 ([X4], [Y4]) 存在交點？",
+            "OPERATION.CALCULATE_INTERSECTION": "計算從直線 ([X1],[Y1]) 到 ([X2],[Y2]) 和直線 ([X3],[Y3]) 到 ([X4],[Y4]) 的交點",
             "OPERATION.TRIANGLE": "三角形 ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) 的 [MODE]",
             "OPERATION.TRIANGLE_AREA": "三角形 [S1] [S2] [S3] 面積",
             "OPERATION.RECTANGLE": "四邊形 ([X1],[Y1]) ([X2],[Y2]) ([X3],[Y3]) ([X4],[Y4]) 的 [MODE]",
@@ -3496,12 +3498,56 @@
                     },
                     hideFromPalette: HideBlockType.graph
                 },
+                ...sep(HideBlockType.graph),
+                {
+                    opcode: 'hasSegmentIntersection',
+                    blockType: BlockType.BOOLEAN,
+                    text: formatMessage({
+                        id: 'OPERATION.HAS_SEGMENT_INTERSECTION',
+                        default: 'segment ([X1], [Y1]) to ([X2], [Y2]) intersects ([X3], [Y3]) to ([X4], [Y4])?'
+                    }),
+                    arguments: {
+                        X1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '-100'
+                        },
+                        Y1: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        Y2: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        X3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y3: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '100'
+                        },
+                        X4: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '0'
+                        },
+                        Y4: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: '-100'
+                        }
+                    },
+                    hideFromPalette: HideBlockType.graph
+                },
                 {
                     opcode: 'calculateIntersection',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
                         id: 'OPERATION.CALCULATE_INTERSECTION',
-                        default: 'calculate line intersection ([X1],[Y1]) to ([X2],[Y2]) & ([X3],[Y3]) to ([X4],[Y4])'
+                        default: 'calculate line intersection ([X1],[Y1]) to ([X2],[Y2]) and ([X3],[Y3]) to ([X4],[Y4])'
                     }),
                     arguments: {
                         X1: {
@@ -5888,6 +5934,27 @@
             let y = a[1] + ua * (b[1] - a[1]);
 
             return [x, y];
+        }
+
+        hasSegmentIntersection({ X1, Y1, X2, Y2, X3, Y3, X4, Y4 }) {
+            const p1 = { x: Cast.toNumber(X1), y: Cast.toNumber(Y1) };
+            const p2 = { x: Cast.toNumber(X2), y: Cast.toNumber(Y2) };
+            const p3 = { x: Cast.toNumber(X3), y: Cast.toNumber(Y3) };
+            const p4 = { x: Cast.toNumber(X4), y: Cast.toNumber(Y4) };
+
+            let c = Math.max(p1.x, p2.x) < Math.min(p3.x, p4.x)
+            c ||= Math.max(p3.x, p4.x) < Math.min(p1.x, p2.x)
+            c ||= Math.max(p1.y, p2.y) < Math.min(p3.y, p4.y)
+            c ||= Math.max(p3.y, p4.y) < Math.min(p1.y, p2.y)
+            if (c) return false;
+
+            const cross = (a, b, c) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+            const c1 = cross(p1, p2, p3);
+            const c2 = cross(p1, p2, p4);
+            const c3 = cross(p3, p4, p1);
+            const c4 = cross(p3, p4, p2);
+
+            return (c1 * c2 <= this.epsilon) && (c3 * c4 <= this.epsilon);
         }
 
         calculateIntersection({ X1, Y1, X2, Y2, X3, Y3, X4, Y4 }) {
