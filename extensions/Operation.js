@@ -5965,7 +5965,7 @@
 
             const result = this._getLineIntersection(a, b, c, d);
 
-            return result ? result : '';
+            return result ? result : [NaN, NaN];
         }
 
         triangle({ X1, Y1, X2, Y2, X3, Y3, MODE }) {
